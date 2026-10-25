@@ -130,3 +130,15 @@ a.dl:hover b{text-decoration:underline}
 .mapcard p{margin:4px 0 0;padding:0 14px 14px;font-size:14px;line-height:1.45;color:var(--ink-2)}
 .mapcard:hover b{text-decoration:underline}
 @media (max-width:760px){.maps{grid-template-columns:1fr}}
+/* Image zoom: figure images open enlarged in a modal dialog over a dimmed page. */
+.fig img{cursor:zoom-in}
+dialog.zoom{padding:0;border:var(--border-w) solid var(--ink);background:var(--white);max-width:94vw;max-height:92vh;overflow:hidden;cursor:zoom-out}
+dialog.zoom img{display:block;max-width:calc(94vw - 4px);max-height:calc(92vh - 4px);width:auto;height:auto}
+dialog.zoom::backdrop{background:rgba(10,10,14,.78)}
+dialog.zoom[open]{animation:zoom-in .22s ease-out}
+dialog.zoom[open]::backdrop{animation:fade-in .22s ease-out}
+@keyframes zoom-in{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:none}}
+@keyframes fade-in{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){dialog.zoom[open],dialog.zoom[open]::backdrop{animation:none}}
+/* The terminus label reads as a stop sign, so it is not lost in the footer. */
+.kicker[data-terminus] span{background:var(--ink);color:var(--paper);padding:8px 14px;font-size:16px;border-radius:999px}

@@ -41,9 +41,12 @@ gtfs_p50.7z       → gtfs_p50/<miasto>/<data>/<miasto>_realized_gtfs_<data>_p50
 dane_gus.7z       → gus/brec_2021_polska.gpkg         ← warstwy: obwody_spisowe, rejony_statystyczne
                     gus/ludnosc_nsp_2021.xlsx         ← ludność wg płci i grup wieku, arkusz na województwo
                     gus/… (gospodarstwa, rodziny — 4 dodatkowe tabele NSP 2021)
-silniki/                              ← awaryjne silniki do skopiowania (pendrive / dysk)
-├── otp/  (Temurin 8 JRE + otp-1.5.0-shaded.jar)
-└── r5/   (Temurin 21 JDK + r5-v7.6-all.jar + skompilowany runner)
+pendrive prowadzącego (poza wydaniem, ok. 770 MB):
+├── otp.7z            ← Temurin 8 JRE + otp-1.5.0-shaded.jar
+├── r5.7z             ← Temurin 21 JDK + r5-v7.6-all.jar
+├── otp_graf_lodz.7z  ← gotowy graf OTP Łodzi (16.09 P50), folder otp_praca_lodz = Katalog roboczy
+├── dane_lodz.7z      ← lodz.osm.pbf + GTFS 26.08 P50, 16.09 P50, 16.09 P85
+└── dane_gus.7z, granice_miast.7z  ← kopie z wydania
 ```
 
 Pliki P50 w paczce mają w nazwie `realized_gtfs`, więc OTP 1.5 je rozpozna (OTP szuka „gtfs”
@@ -79,7 +82,7 @@ Processing znajduje algorytm po obu.
 2. *Diagnostics → Test OTP server* (PL: *Test serwera OTP*) → „Wszystkie testy zaliczone”.
 3. `osm/<miasto>.osm.pbf` i `<miasto>_realized_gtfs_2026-09-16_p50.zip` z paczki; plik rozkładu
    w osobnym folderze bez innych .zip (to *Folder GTFS*).
-4. Podkład: *Przeglądarka → XYZ Tiles → OpenStreetMap*.
+4. Podkład: wtyczka QuickMapServices, *Internet → QuickMapServices → OSM → OSM Standard*.
 5. *Analysis → Generate isochrones over time* (PL: *Generuj izochrony w czasie*): punkt („…” i klik
    na mapie), OSM, Folder GTFS, TRANSIT, FROM, próg `30`, okno 06:00–22:00, **interwał 60**
    (domyślnie 15), data **2026-09-16** (domyślnie dziś), *Katalog roboczy* = nowy pusty folder.
@@ -113,7 +116,8 @@ zajmuje ok. 25 operacji w QGIS. Jeśli brakuje czasu, P85 robi prowadzący jako 
 
 1. *Easy-R5 → Download transit recordings…*: City (Łódź na końcu listy, nie ŁKA), najpierw
    Month **2026-08**, potem Day **2026-08-26**, Variant **Realized — median (P50)**, Download into
-   np. `C:5
+   np. `C:
+5
 agrania`. Potem drugi raz: **2026-09-16**, P50. Każdy dzień ląduje w osobnym
    folderze (`…\<miasto>\<data>\p50\`) — tak ma być.
 2. *Diagnostics → Check transit data (GTFS)*: plik .zip danego dnia i ta sama data. Zero błędów
@@ -173,7 +177,7 @@ w analizie zmiany sieci w Łodzi z 5.10.
 
 ## Plan B na sali
 
-- Pobieranie silników nie działa → `silniki/` z pendrive’a, ścieżki w *Advanced*.
+- Pobieranie silników nie działa → `otp.7z` / `r5.7z` z pendrive’a, ścieżki w *Advanced*.
 - Pobieranie GTFS nie działa → `gtfs_p50.7z`, folder `<miasto>/<data>/`.
 - Komputer za słaby na Warszawę / GZM → mniejsze miasto albo siatka 1000 m.
 - Brak czasu na ludność → wynik w liczbie heksów, ludność w zadaniu domowym.

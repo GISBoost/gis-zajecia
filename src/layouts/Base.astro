@@ -42,8 +42,19 @@ const nav: [string, string][] = [
       </div>
     </header>
     <main><slot /></main>
+    <dialog class="zoom" aria-label="Powiększony obraz"><img alt="" /></dialog>
     <script>
       import '../scripts/journey';
+      // Click a figure image to view it enlarged; click anywhere or press Esc to close.
+      const zoom = document.querySelector<HTMLDialogElement>('dialog.zoom')!;
+      const zimg = zoom.querySelector('img')!;
+      document.querySelectorAll<HTMLImageElement>('.fig img').forEach((img) => {
+        img.tabIndex = 0;
+        const open = () => { zimg.src = img.currentSrc || img.src; zimg.alt = img.alt; zoom.showModal(); };
+        img.addEventListener('click', open);
+        img.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+      });
+      zoom.addEventListener('click', () => zoom.close());
       const btn = document.querySelector<HTMLButtonElement>('.theme')!;
       const icon = btn.querySelector('.ms')!;
       const sync = () => { icon.textContent = document.documentElement.dataset.theme === 'night' ? 'light_mode' : 'dark_mode'; };

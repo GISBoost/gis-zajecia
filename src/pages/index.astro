@@ -75,7 +75,7 @@ const r5Algs: [string, string][] = [
       <div class="items">
         <div class="item" data-reveal><LineBullet label="1" line="black" size="sm" /><div><b>Wybierz miasto</b><p>Jedno z 15 miast z <a href="https://gisboost.github.io/gtfs-dashboard/" target="_blank" rel="noopener">indeksu nagrań GTFS</a>. Duże sieci (Warszawa, GZM) liczą się najdłużej.</p></div></div>
         <div class="item" data-reveal><LineBullet label="2" line="black" size="sm" /><div><b>Zainstaluj wtyczki</b><p><i>Wtyczki → Zarządzaj wtyczkami</i>, wyszukaj <a href="https://github.com/GISBoost/easy-OTP" target="_blank" rel="noopener">easy-OTP</a> i <a href="https://github.com/GISBoost/easy-R5" target="_blank" rel="noopener">Easy-R5</a>. Obie są w repozytorium wtyczek QGIS.</p></div></div>
-        <div class="item" data-reveal><LineBullet label="3" line="black" size="sm" /><div><b>Pobierz dane</b><p>Cztery archiwa z <a href="#materialy">paczki danych</a>: OSM, granice, GUS i rozkłady P50 (rozkład z 16.09 jest potrzebny już w ćwiczeniu 1). Archiwa .7z otworzysz <a href="https://www.7-zip.org/" target="_blank" rel="noopener">7-Zipem</a>.</p></div></div>
+        <div class="item" data-reveal><LineBullet label="3" line="black" size="sm" /><div><b>Pobierz dane</b><p>Cztery archiwa z <a href={RELEASES} target="_blank" rel="noopener">paczki danych</a>: OSM, granice, GUS i rozkłady P50 (rozkład z 16.09 jest potrzebny już w ćwiczeniu 1). Archiwa .7z otworzysz <a href="https://www.7-zip.org/" target="_blank" rel="noopener">7-Zipem</a>.</p></div></div>
         <div class="item" data-reveal><LineBullet label="4" line="black" size="sm" /><div><b>Uruchom pobieranie silników</b><p><i>easy-OTP → Setup</i> i <i>Easy-R5 → Setup</i>. Gdyby nie ruszyło, silniki awaryjne ma prowadzący na pendrivie.</p></div></div>
       </div>
       <div class="cities" data-reveal>{cities.map((c) => <span class="city">{c}</span>)}</div>
@@ -225,7 +225,7 @@ const r5Algs: [string, string][] = [
         <li data-reveal><b>Silnik OTP</b><p><i>easy-OTP → Setup → Download Java 8 JRE and OpenTripPlanner Jar</i> (PL: <i>1 · Konfiguracja → Pobierz Java 8 JRE i plik Jar OpenTripPlanner</i>), folder np. <span class="path">C:\otp\</span>. Wtyczka zapamięta ścieżki do Javy i jara. Jeśli pobieranie nie działa: skopiuj folder <span class="path">otp/</span> z pendrive’a prowadzącego.</p></li>
         <li data-reveal><b>Sprawdzenie</b><p><i>Diagnostics → Test OTP server</i> (PL: <i>2 · Diagnostyka → Test serwera OTP</i>). Wynik „Wszystkie testy zaliczone” znaczy, że Java i jar są gotowe.</p></li>
         <li data-reveal><b>Dane</b><p>Z paczek wypakuj <span class="path">&lt;miasto&gt;.osm.pbf</span> i <span class="path">&lt;miasto&gt;_realized_gtfs_2026-09-16_p50.zip</span>. Plik rozkładu skopiuj do osobnego folderu, w którym nie ma innych plików .zip: ten folder wskażesz jako <i>Folder GTFS</i>.</p></li>
-        <li data-reveal><b>Podkład mapy</b><p><i>Przeglądarka → XYZ Tiles → OpenStreetMap</i> (przeciągnij na mapę). Bez podkładu trudno trafić w dworzec albo uczelnię.</p></li>
+        <li data-reveal><b>Podkład mapy</b><p>Wtyczka QuickMapServices: <i>Wtyczki → Zarządzaj wtyczkami</i>, wyszukaj <i>QuickMapServices</i> i zainstaluj. Potem <i>Internet → QuickMapServices → OSM → OSM Standard</i>. Bez podkładu trudno trafić w dworzec albo uczelnię.</p></li>
         <li data-reveal><b>Izochrona co godzinę</b><p><i>Analysis → Generate isochrones over time</i> (PL: <i>3 · Analiza → Generuj izochrony w czasie</i>):</p>
           <ul>
             <li>punkt: przycisk „…” obok pola i klik na mapie (dworzec albo uczelnia);</li>
@@ -234,12 +234,15 @@ const r5Algs: [string, string][] = [
             <li>okno 06:00–22:00, <b>interwał 60</b> (domyślnie jest 15), data <b>2026-09-16</b> (domyślnie jest dzisiejsza);</li>
             <li><i>Katalog roboczy</i>: nowy pusty folder, np. <span class="path">C:\otp\praca</span>.</li>
           </ul>
-          <p>Wynik: 17 izochron, każda z polem <code>time</code>. Pierwszy przebieg buduje graf, to najdłuższy krok (ok. 1–2 min dla Łodzi).</p></li>
+          <p>Wynik: 17 izochron, każda z polem <code>time</code>. Pierwszy przebieg buduje graf, to najdłuższy krok (ok. 1–2 min dla Łodzi). Dla Łodzi prowadzący ma na pendrivie gotowy graf (<span class="path">otp_graf_lodz.7z</span>): wypakuj go i wskaż folder <span class="path">otp_praca_lodz</span> jako <i>Katalog roboczy</i>, a budowa się pominie.</p></li>
         <li data-reveal><b>Ustawienia czasu warstwy</b><p><i>Właściwości warstwy → Czas</i>: zaznacz <i>Dynamiczna kontrola czasu</i>, Tryb: <i>pojedyncze pole z datą/godziną</i>, pole <code>time</code>, czas trwania zdarzenia 60 minut. Wtyczka nie ustawia tego sama.</p></li>
         <li data-reveal><b>Animacja</b><p><i>Widok → Panele → Sterowanie czasem</i> (Temporal Controller): kliknij ikonę animacji, potem <i>Ustaw na pełny zakres</i>, krok 1 godzina i ▶. W każdej klatce widać jedną izochronę.</p></li>
         <li data-reveal><b>Dla chętnych</b><p>Ten sam punkt z interwałem 15 min albo z progami <code>15,30</code>. Użyj tego samego <i>Katalogu roboczego</i>: graf jest już zbudowany, więc liczy się szybko. Liczba zapytań rośnie z każdym progiem i każdym krokiem czasu.</p></li>
       </ol>
-      <Figure src="img/izochrony-otp.jpg" alt="Izochrony wygenerowane w easy-OTP" caption="Uwaga: ten obrazek pokazuje działanie innego algorytmu (Generate isochrones: kilka progów w jednym momencie). W ćwiczeniu dostajesz jedną izochronę 30 min na każdą godzinę." />
+      <div class="blocks" data-reveal style="border:0;gap:16px">
+        <Figure src="img/izochrony-otp.jpg" alt="Izochrony wygenerowane w easy-OTP" caption="Inny algorytm (Generate isochrones): kilka progów w jednym momencie." />
+        <Figure src="video/izochrony-godzinowe.mp4" video alt="Animacja: izochrona 30 min z jednego punktu w Łodzi co godzinę od 6:00 do 22:00" caption="Wynik ćwiczenia: jedna izochrona 30 min na każdą godzinę (Łódź, 16.09.2026, P50)." />
+      </div>
       <div class="note" data-reveal><h3>Do dyskusji</h3><p>O której zasięg jest największy, a o której najmniejszy? Gdzie rośnie skokowo wzdłuż kolei i tramwaju? Dlaczego wieczorem kurczy się bardziej na peryferiach niż w centrum?</p></div>
     </div>
   </section>
@@ -260,9 +263,9 @@ const r5Algs: [string, string][] = [
         <tbody>{r5Algs.map(([a, d]) => <tr><td class="alg">{a}</td><td>{d}</td></tr>)}</tbody>
       </table>
 
-      <h3 class="h3">Przykład 1: ile usług jest w zasięgu 30 minut z każdego heksa?</h3>
-      <p class="small">Łódź, siatka 500 m. Dla każdego heksa liczba szkół, placówek zdrowia, placówek kultury i supermarketów, do których dojedziesz transportem publicznym w 30 min (odjazd 7:00–9:00, mediana). To ta sama miara co przy Żabkach, tylko z tysięcy punktów naraz.</p>
-      <Figure src="img/r5-lodz-uslugi-30min.jpg" alt="Łódź: liczba usług osiągalnych w 30 minut z każdego heksa 500 m" caption="Od czerwonego (mało usług w zasięgu) do zielonego (dużo). Wyraźne centrum i korytarze tramwajowe." />
+      <h3 class="h3">Przykład 1: do ilu uczelni dojedziesz w 30 minut z każdego heksa?</h3>
+      <p class="small">Łódź, siatka 500 m, trzy uczelnie: Politechnika, Uniwersytet Łódzki i Uniwersytet Medyczny. Dla każdego heksa liczymy, do ilu z nich dojedziesz transportem publicznym w 30 min (rozkład zrealizowany P50 z 21.08.2026). To ta sama miara co przy Żabkach, tylko z tysięcy punktów naraz.</p>
+      <Figure src="img/r5-lodz-uczelnie-30min.jpg" alt="Łódź: liczba uczelni osiągalnych w 30 minut z każdego heksa 500 m, na podkładzie OSM, z legendą" caption="Im ciemniejszy heks, tym więcej uczelni w zasięgu 30 min. Kropki to budynki uczelni. Wszystkie trzy są w zasięgu tylko w centrum i na południe od niego." />
 
       <h3 class="h3">Przykład 2: ile kosztują opóźnienia?</h3>
       <p class="small">Ta sama dostępność policzona dwa razy dla tego samego dnia: raz na rozkładzie, raz na rozkładzie zrealizowanym (P50) odtworzonym z nagrań GTFS-RT. Różnica pokazuje, gdzie opóźnienia odbierają mieszkańcom szkoły, apteki, uczelnie i centra handlowe w zasięgu 30 min. Policzone w całości algorytmami Easy-R5.</p>
@@ -290,7 +293,7 @@ const r5Algs: [string, string][] = [
       <p class="lead">Ta sama analiza dla dwóch środ: 26.08.2026 (wakacje) i 16.09.2026 (rok szkolny). Liczymy na <b>rozkładzie zrealizowanym</b> odtworzonym z nagrań GTFS-RT, a nie na planie. Dzięki temu w wyniku są i zmiany rozkładu, i korki, które we wrześniu spowalniają autobusy i tramwaje. Wynik podajemy w liczbie mieszkańców w wieku 10–19 lat, nie tylko w heksach.</p>
       <div class="blocks" data-reveal>
         <div class="block paper"><h3>P50 · wariant główny</h3><p>Czasy przejazdu między przystankami z mediany nagranych kursów: tak jechał typowy pojazd tego dnia.</p></div>
-        <div class="block mustard"><h3>P85 · wariant dodatkowy</h3><p>Czasy, których nie przekroczyło 85% kursów: wariant ostrożny, „jak jest, kiedy trafisz gorzej”.</p></div>
+        <div class="block mustard"><h3>P85 · wariant dodatkowy</h3><p>Ten sam dzień, odczytany ostrożniej. Dla każdego odcinka między dwoma przystankami bierzemy nagrane przejazdy z danej pory dnia. P50 to czas typowy: połowa przejazdów była szybsza. P85 to czas, którego nie przekroczyło 85% przejazdów, czyli wolny przejazd. Rozkład złożony z takich czasów odpowiada na pytanie „ile czasu zarezerwować”, a nie „ile to zwykle trwa”. To nie jest inny, gorszy dzień, tylko pesymistyczny odczyt tych samych nagrań: wolno na każdym odcinku naraz.</p></div>
       </div>
 
       <div class="phase"><LineBullet label="A" line="blue" size="md" /><h3>Dane · 10 min</h3></div>
@@ -325,7 +328,7 @@ const r5Algs: [string, string][] = [
         </li>
         <li data-reveal><b>Szkoły z OSM</b>
           <ul>
-            <li>przeciągnij <span class="path">&lt;miasto&gt;.osm.pbf</span> do QGIS i zaznacz warstwy <i>points</i> i <i>multipolygons</i>;</li>
+            <li>przeciągnij <span class="path">&lt;miasto&gt;.osm.pbf</span> do QGIS (otwiera go wbudowany sterownik OSM, bez dodatkowych wtyczek); w oknie wyboru warstw zaznacz <i>points</i> i <i>multipolygons</i>;</li>
             <li>filtr na <i>points</i>: <code>"other_tags" LIKE '%"amenity"=&gt;"school"%'</code>;</li>
             <li>filtr na <i>multipolygons</i>: <code>"amenity" = 'school'</code> (tu <code>amenity</code> jest osobną kolumną);</li>
             <li>z poligonów zrób <i>Centroids</i>, potem scal obie warstwy: <i>Merge vector layers</i> (PL: <i>Połącz warstwy wektorowe</i>);</li>
@@ -363,8 +366,8 @@ const r5Algs: [string, string][] = [
         <p>Dwa dni różnią się też zwykłą zmiennością: pogoda, wypadek, remont. Żeby oddzielić efekt, porównuje się dodatkowo dwa dni z tego samego okresu (para kontrolna). Tak zrobiona jest analiza zmiany tras w Łodzi z 5.10.2026: para główna pokazuje zmianę, para kontrolna, ile różnicy robi sam dzień.</p>
       </div>
       <div class="blocks" data-reveal style="border:0;gap:16px">
-        <Figure src="img/r5-zmiana-tras-main.jpg" alt="Łódź: zmiana czasu dojazdu po zmianie tras 5.10 względem 28.09" caption="Para główna: 5.10 (po zmianie tras) vs 28.09. Niebieski: krócej, czerwony: dłużej." />
-        <Figure src="img/r5-zmiana-tras-placebo.jpg" alt="Łódź: zmiana czasu dojazdu między dwoma poniedziałkami przed zmianą tras" caption="Para kontrolna: 28.09 vs 21.09, oba dni przed zmianą. Tyle różnicy robi sam dzień." />
+        <Figure src="img/r5-zmiana-tras-main.jpg" alt="Łódź: zmiana czasu dojazdu po zmianie tras 5.10 względem 28.09" caption="Para główna: 5.10 (po zmianie tras) vs 28.09. Dla każdego heksa 250 m średnia zmiana czasu dojazdu transportem do wszystkich pozostałych heksów (ważona ich ludnością), odjazd 7:00–9:00. Niebieski: krócej, czerwony: dłużej; najmocniejsze kolory to zmiana o 3 min i więcej, szary to mniej niż 15 s." />
+        <Figure src="img/r5-zmiana-tras-placebo.jpg" alt="Łódź: zmiana czasu dojazdu między dwoma poniedziałkami przed zmianą tras" caption="Para kontrolna: 28.09 vs 21.09, oba dni przed zmianą, ta sama miara. Tyle różnicy robi sam dzień." />
       </div>
     </div>
   </section>
@@ -458,7 +461,7 @@ const r5Algs: [string, string][] = [
       </div>
       <div class="note" data-reveal>
         <h3>Plan B na sali</h3>
-        <p>Pobieranie silnika nie działa: skopiuj folder z pendrive’a i wskaż ścieżki w <i>Advanced</i>. Pobieranie rozkładu nie działa: weź swoje miasto z <span class="path">gtfs_p50.7z</span>. Komputer za słaby na Warszawę albo GZM: mniejsze miasto albo siatka 1000 m.</p>
+        <p>Pobieranie silnika nie działa: wypakuj <span class="path">otp.7z</span> albo <span class="path">r5.7z</span> z pendrive’a i wskaż ścieżki w <i>Advanced</i>. Graf OTP dla Łodzi buduje się za długo: na pendrivie jest gotowy (<span class="path">otp_graf_lodz.7z</span>). Pobieranie rozkładu nie działa: weź swoje miasto z <span class="path">gtfs_p50.7z</span>. Komputer za słaby na Warszawę albo GZM: mniejsze miasto albo siatka 1000 m.</p>
       </div>
     </div>
   </section>
