@@ -199,8 +199,11 @@ function build() {
         head.setAttribute('opacity', '1');
       } else head.setAttribute('opacity', '0');
     });
-    const start = Math.max(0, sg.a.y - vh * 0.6);
-    const end = Math.max(start + 1, sg.b.y - vh * 0.6);
+    // The page cannot scroll past H - vh, so clamp the trigger: otherwise the last segment
+    // never finishes drawing and stops short of the terminus.
+    const maxScroll = Math.max(1, H - vh);
+    const start = Math.min(Math.max(0, sg.a.y - vh * 0.6), maxScroll - 1);
+    const end = Math.min(Math.max(start + 1, sg.b.y - vh * 0.6), maxScroll);
     triggers.push(ScrollTrigger.create({ start, end, animation: tl, scrub: 0.6 }));
     tweens.push(tl);
   });

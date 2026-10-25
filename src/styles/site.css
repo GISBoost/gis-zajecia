@@ -36,8 +36,6 @@ main{position:relative;z-index:1}
 .muted{color:var(--ink-3)}
 p{text-wrap:pretty}
 
-.stamp{position:absolute;right:0;top:-6px;width:112px;height:112px;border-radius:50%;border:2px solid var(--ink);background:var(--paper-2);display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-9deg);font:700 11px/1.1 var(--font-condensed);letter-spacing:.08em;text-transform:uppercase;text-align:center}
-.stamp b{font:700 34px/1 var(--font-sans);letter-spacing:-0.03em;margin:3px 0}
 
 .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:32px}
 
@@ -122,8 +120,6 @@ a.dl:hover b{text-decoration:underline}
   .items,.foot-cols,.kpis,.blocks{grid-template-columns:1fr}
   .block + .block{border-left:0;border-top:2px solid var(--ink)}
   .sec{padding:88px 0}
-  .stamp{width:84px;height:84px}
-  .stamp b{font-size:24px}
   .tbl{font-size:14px}
   .dl{grid-template-columns:1fr}
 }
