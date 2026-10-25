@@ -11,7 +11,9 @@ const url = import.meta.env.BASE_URL + src;
   {caption && <figcaption>{caption}</figcaption>}
 </figure>
 <style>
-  .fig{margin:28px 0 0;border:var(--border-w) solid var(--ink);background:var(--white)}
-  img,video{display:block;width:100%;height:auto}
-  figcaption{border-top:var(--border-w) solid var(--ink);padding:10px 14px;font:400 14px/1.4 var(--font-condensed);background:var(--paper-2)}
+  /* Frame hugs the (possibly height-capped) image; the caption never widens it. */
+  .fig{width:fit-content;max-width:100%;margin:28px auto 0;border:var(--border-w) solid var(--ink);background:var(--white)}
+  /* Tall or square images are capped so the whole figure fits on screen without scrolling. */
+  img,video{display:block;width:auto;max-width:100%;height:auto;max-height:min(68vh,720px);margin:0 auto}
+  figcaption{width:0;min-width:100%;box-sizing:border-box;border-top:var(--border-w) solid var(--ink);padding:10px 14px;font:400 14px/1.4 var(--font-condensed);background:var(--paper-2)}
 </style>
