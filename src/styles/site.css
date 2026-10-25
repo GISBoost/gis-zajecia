@@ -103,6 +103,8 @@ code{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-size:.88em
 .dl b{font-size:17px}
 .dl p{margin:4px 0 0;font-size:14px;line-height:1.45;color:var(--ink-2)}
 .dl .size{font:700 15px/1 var(--font-condensed);font-variant-numeric:tabular-nums;white-space:nowrap}
+a.dl{text-decoration:none;color:inherit}
+a.dl:hover b{text-decoration:underline}
 
 .cities{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
 .city{display:inline-flex;align-items:center;height:30px;padding:0 10px;border:2px solid var(--ink);font:700 14px/1 var(--font-condensed)}
@@ -124,3 +126,10 @@ code{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-size:.88em
   .tbl{font-size:14px}
   .dl{grid-template-columns:1fr}
 }
+.maps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:24px}
+.mapcard{display:block;border:var(--border-w) solid var(--ink);background:var(--white);text-decoration:none;color:inherit}
+.mapcard img{display:block;width:100%;aspect-ratio:14/9;object-fit:cover;border-bottom:var(--border-w) solid var(--ink)}
+.mapcard b{display:block;padding:12px 14px 0;font-size:17px}
+.mapcard p{margin:4px 0 0;padding:0 14px 14px;font-size:14px;line-height:1.45;color:var(--ink-2)}
+.mapcard:hover b{text-decoration:underline}
+@media (max-width:760px){.maps{grid-template-columns:1fr}}

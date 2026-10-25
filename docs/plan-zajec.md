@@ -56,42 +56,54 @@ Pliki GTFS z gtfs-dashboard mają w nazwie `static_gtfs`, więc OTP 1.5 je rozpo
 | Min | Blok | Co robi prowadzący | Co robią studenci |
 |---|---|---|---|
 | 0–5 | Start | Link do strony, wybór miasta | Instalują easy-OTP i easy-R5 z repozytorium wtyczek QGIS i **od razu** uruchamiają oba moduły pobierania silników (idą w tle podczas wstępu) |
-| 5–15 | Wstęp | Kim jestem. Bufor → izochrona → dostępność w czasie. Dane: GTFS i OSM | Słuchają, pobieranie trwa |
-| 15–25 | OTP: jak działa | Graf z OSM i GTFS, A* i Tung-Chew, podróż od drzwi do drzwi. Jeden-do-wielu i wiele-do-wielu, Żabki w 10 min | — |
-| 25–30 | OTP: metoda temporalna | 961 powierzchni, 4 klasy obsługi. 12 kroków w R → kilka algorytmów wtyczki. Artykuł ESRP: 6 miast | — |
-| 30–50 | **Ćwiczenie 1 (OTP)** | Pokazuje na rzutniku krok po kroku | Izochrony 15/30/45 min z dworca/uczelni o 8:00 i o 22:00; izochrony w czasie i animacja w Temporal Controller |
-| 50–55 | Przerwa | | Ci, którzy nie zdążyli, kończą ćwiczenie 1 |
-| 55–65 | R5: czym się różni | Każda minuta okna odjazdów, percentyle, Monte Carlo; szybkość; scenariusze. Przykłady: demo Łódź (szkoły, nowy tramwaj), mapy-analizy | — |
-| 65–100 | **Ćwiczenie 2 (R5): wakacje vs szkoła** | Prowadzi krok po kroku, pilnuje tempa | Opis niżej |
-| 100–112 | Rozkład to nie rzeczywistość | GTFS-RT → zrealizowany rozkład P50/P85 → easy-GTFS-RT, gtfs-dashboard; mapy-analizy na żywo (opóźnienia a dostępność, zmiana sieci w Łodzi 5.10 z parą kontrolną) | Mogą pobrać wariant P50 tego samego dnia |
-| 112–120 | Podsumowanie | Co dalej, materiały, zadanie domowe | — |
+| 5–12 | Czym jest OTP | Planer podróży (jak Google Maps / jakdojade), gdzie działa (Norwegia, Finlandia, Islandia, Poznań). Dane: GTFS i OSM (Geofabrik, OSM by the Slice). Czym różni się od Valhalla, ORS Tools, QNEAT3: zna rozkład jazdy. Bufor a izochrona | Słuchają, pobieranie trwa |
+| 12–22 | Od R do wtyczki | otpr w RStudio: izochrona 15/30/45; pętla z heksów na kampus PŁ (czas + przesiadki, ponad 5 min); powierzchnia czasu podróży w 1 s (limit 120 min); jeden-do-wielu i wiele-do-wielu; Żabki w 10 min (film + dwa kroki algorytmu) | — |
+| 22–30 | Czas obsługi transportem | Powierzchnia co minutę 6–22 (961), stos rastrów, zliczenie minut ≤ 30 min, 4 klasy, nakładka GUS. 12 kroków ręcznie → easy-OTP. Artykuł ESRP (DOI) | — |
+| 30–50 | **Ćwiczenie 1 (OTP)** | Pokazuje na rzutniku krok po kroku | Izochrona 30 min z jednego punktu co godzinę 6:00–22:00, animacja w Temporal Controller |
+| 50–60 | Izochrona z każdego miejsca (R5) | Wszystkie heksy naraz, każda minuta okna odjazdów, percentyle. Przykłady z easy-R5/tools: usługi w 30 min (Łódź), koszt opóźnień (Łódź), uczelnie w 6 miastach; mapy-analizy | Kto skończył ćwiczenie 1, uruchamia pobieranie nagrań do ćwiczenia 2 |
+| 60–100 | **Ćwiczenie 2 (R5): wakacje a rok szkolny na danych RT** | Prowadzi krok po kroku, pilnuje tempa | Opis niżej |
+| 100–115 | Skąd dane i co z nich wychodzi | 1) easy-GTFS-RT: nagrywanie VehiclePositions co 60 s, dopasowanie, interpolacja, P50/P85, przebudowa GTFS (zrzut wydania Łódź 16.09); 2) gtfs-dashboard: katalog dnia, wykres opóźnień, ten sam indeks co moduł pobierania Easy-R5; 3) mapy-analizy na żywo (Dokąd dojadę?, Ile kosztują opóźnienia?, odstępy na przystankach, Łódzkie, Gdzie mieszkać, schemat linii); 4) zadanie domowe | Otwierają katalog dla swojego miasta |
+| 115–120 | Podsumowanie | Co dalej, materiały | — |
 
-Rezerwa czasu: jeśli ćwiczenie 1 się przeciąga, animację w czasie przenosimy do zadania domowego.
-Ćwiczenia 2 nie skracamy — to puenta zajęć.
+Bez przerwy w środku: zajęcia idą ciągiem. Rezerwa czasu: jeśli ćwiczenie 1 się przeciąga,
+wariant co 15 min przenosimy do zadania domowego. Ćwiczenia 2 nie skracamy — to puenta zajęć.
 
-## Ćwiczenie 1 — izochrony w OTP (20 min)
+## Ćwiczenie 1 — izochrona co godzinę w OTP (20 min)
+
+**Pytanie:** jak zmienia się zasięg 30 minut z jednego miejsca w ciągu dnia?
 
 1. *easy-OTP → Setup → Download Java 8 JRE and OpenTripPlanner Jar* (już pobrane na starcie).
    Awaryjnie: skopiuj `silniki/otp/` i wskaż ścieżki w *Advanced*.
 2. *Diagnostics → Test OTP server* — czy Java i jar są widoczne.
 3. Do jednego folderu: `paczka/osm/<miasto>.osm.pbf` i plik GTFS z 16.09.2026.
-4. *Analysis → Generate isochrones*: punkt (kliknięcie na mapie: dworzec lub uczelnia), TRANSIT,
-   progi `15,30,45`, data 2026-09-16, godzina 08:00. Pierwszy przebieg buduje graf (najdłuższy krok).
-5. To samo o 22:00. Porównanie dwóch warstw — dyskusja: dlaczego wieczorem zasięg się kurczy.
-6. *Generate isochrones over time*: ten sam punkt, próg 30 min, 6:00–22:00 co 15 min →
-   Temporal Controller → animacja.
+4. *Analysis → Generate isochrones over time*: punkt (kliknięcie na mapie: dworzec lub uczelnia),
+   TRANSIT, FROM, próg `30`, data 2026-09-16, okno 06:00–22:00, **interwał 60 min** → 17 izochron
+   z polem `time` (QDateTime). Pierwszy przebieg buduje graf (najdłuższy krok).
+5. *Właściwości warstwy → Czasowe*: dynamiczne właściwości czasowe, *Pojedyncze pole z datą/czasem*,
+   pole `time`, czas trwania zdarzenia 60 min.
+6. *Widok → Panele → Temporal Controller*: animacja, zakres z warstw, krok 1 h → odtwórz.
+7. Dla chętnych: interwał 15 min albo progi `15,30`.
 
-**Pytanie do dyskusji:** gdzie zasięg rośnie skokowo (kolej, tramwaj), a gdzie jest „poszarpany”?
+Obrazek na stronie przy ćwiczeniu (izochrony 15/30/45) pokazuje inny algorytm
+(*Generate isochrones*) — strona to zaznacza.
 
-## Ćwiczenie 2 — wakacje vs rok szkolny w R5 (35 min)
+**Pytanie do dyskusji:** o której zasięg jest największy, a o której najmniejszy? Gdzie rośnie
+skokowo (kolej, tramwaj), a gdzie jest „poszarpany”? Dlaczego wieczorem kurczy się bardziej
+na peryferiach?
 
-**Pytanie:** ilu uczniów (10–19 lat) ma szkołę w zasięgu 30 minut transportem publicznym rano
-w wakacje, a ilu we wrześniu? Gdzie różnica jest największa?
+## Ćwiczenie 2 — wakacje a rok szkolny na drogach, R5 na danych RT (35 min)
+
+**Pytanie:** jaka jest różnica między wakacjami a rokiem szkolnym na drogach? Ilu uczniów
+(10–19 lat) ma szkołę w zasięgu 30 minut transportem publicznym rano w wakacje, a ilu we wrześniu?
+
+Liczymy na **rozkładzie zrealizowanym P50** z nagrań GTFS-RT (gtfs-dashboard), nie na planowym:
+w wyniku są i zmiany rozkładu, i korki. Wariant **P85** (ostrożny) jako dodatkowy. Oba dni mają
+P50 i P85 dla wszystkich 15 miast (manifest gtfs-dashboard, status `ok`, pokrycie 6:00–22:00).
 
 ### A. Dane (10 min)
 
-1. *Easy-R5 → Download transit recordings…*: miasto, dzień **2026-08-26**, wariant *scheduled*.
-   Potem drugi raz: **2026-09-16**. Każdy dzień ląduje w osobnym folderze — tak ma być.
+1. *Easy-R5 → Download transit recordings…*: miasto, dzień **2026-08-26**, wariant **P50**.
+   Potem drugi raz: **2026-09-16**, P50. Każdy dzień ląduje w osobnym folderze — tak ma być.
 2. *Diagnostics → Check transit data* dla obu folderów z ich datą. Zero błędów = można budować.
    (Pułapka do omówienia: data bez kursów daje po cichu same trasy piesze.)
 3. *Setup → Build R5 network* dwa razy: ten sam `paczka/osm/<miasto>.osm.pbf`, raz folder
@@ -123,6 +135,8 @@ w wakacje, a ilu we wrześniu? Gdzie różnica jest największa?
 11. Kontrola ręczna: kalkulator pól `"value_b" - "value_a"` musi dać to samo co `diff`.
 12. *Summarize accessibility equity* dla obu przebiegów z ludnością 10–19 → zdanie
     „X% uczniów ma szkołę w 30 min w wakacje, Y% we wrześniu”.
+13. Wariant dodatkowy: 16.09 w wariancie **P85**, trzecia sieć, *Run accessibility* z tymi samymi
+    parametrami, porównanie z P50 tego samego dnia: ilu uczniów traci szkołę, gdy trafi na wolniejszy kurs.
 
 **Dyskusja:** różnica to nie tylko „szkoła vs wakacje”. Żeby oddzielić efekt rozkładu od zwykłej
 zmienności dnia, porównuje się też dwa dni z tego samego okresu (para kontrolna) — tak jak
@@ -132,8 +146,8 @@ w analizie zmiany sieci w Łodzi z 5.10.
 
 - Analiza temporalna w easy-OTP (interwał 15 min) dla tego samego punktu w obu dniach i
   *Compare temporal accessibility*.
-- To samo ćwiczenie 2 na wariancie zrealizowanym P50 zamiast rozkładowego: o ile rzeczywistość
-  odbiega od planu?
+- Ćwiczenie 2 dla 16.09 na rozkładzie planowym (`scheduled`) i porównanie z P50: o ile
+  rzeczywistość odbiega od planu?
 - Scenariusz w easy-R5: narysuj nową linię (*Build scenario*) i policz, ilu uczniom pomoże.
 
 ## Plan B na sali
