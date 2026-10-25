@@ -8,7 +8,7 @@ import RouteStrip from '../components/RouteStrip.astro';
 import LineBullet from '../components/LineBullet.astro';
 import Logo from '../components/Logo.astro';
 
-const RELEASES = 'https://github.com/GISBoost/gis-zajecia/releases';
+const RELEASES = 'https://github.com/GISBoost/gis-zajecia/releases/tag/dane-2026-10';
 const MAPY = 'https://gisboost.github.io/mapy-analizy/';
 const DOI = 'https://doi.org/10.18778/1231-1952.33.2.04';
 
@@ -76,7 +76,7 @@ const r5Algs: [string, string][] = [
         <div class="item" data-reveal><LineBullet label="1" line="black" size="sm" /><div><b>Wybierz miasto</b><p>Jedno z 15 miast z <a href="https://gisboost.github.io/gtfs-dashboard/" target="_blank" rel="noopener">indeksu nagrań GTFS</a>. Duże sieci (Warszawa, GZM) liczą się najdłużej.</p></div></div>
         <div class="item" data-reveal><LineBullet label="2" line="black" size="sm" /><div><b>Zainstaluj wtyczki</b><p><i>Wtyczki → Zarządzaj wtyczkami</i>, wyszukaj <a href="https://github.com/GISBoost/easy-OTP" target="_blank" rel="noopener">easy-OTP</a> i <a href="https://github.com/GISBoost/easy-R5" target="_blank" rel="noopener">Easy-R5</a>. Obie są w repozytorium wtyczek QGIS.</p></div></div>
         <div class="item" data-reveal><LineBullet label="3" line="black" size="sm" /><div><b>Pobierz dane</b><p>OSM i granicę swojego miasta oraz obwody GUS z <a href="#materialy">paczki danych</a>. Archiwa .7z otworzysz <a href="https://www.7-zip.org/" target="_blank" rel="noopener">7-Zipem</a>.</p></div></div>
-        <div class="item" data-reveal><LineBullet label="4" line="black" size="sm" /><div><b>Uruchom pobieranie silników</b><p><i>easy-OTP → Setup</i> i <i>Easy-R5 → Setup</i>. Gdyby nie ruszyło, silniki są w paczce.</p></div></div>
+        <div class="item" data-reveal><LineBullet label="4" line="black" size="sm" /><div><b>Uruchom pobieranie silników</b><p><i>easy-OTP → Setup</i> i <i>Easy-R5 → Setup</i>. Gdyby nie ruszyło, silniki awaryjne ma prowadzący na pendrivie.</p></div></div>
       </div>
       <div class="cities" data-reveal>{cities.map((c) => <span class="city">{c}</span>)}</div>
     </div>
@@ -218,7 +218,7 @@ const r5Algs: [string, string][] = [
       <h2 class="h2">Jak zmienia się zasięg z jednego miejsca w ciągu dnia?</h2>
       <p class="lead">Jedna izochrona z tego samego punktu co godzinę, od 6:00 do 22:00, a potem animacja w Temporal Controller. Potrzebne: plik OSM twojego miasta i rozkład z 16.09.2026 (z paczki albo pobrany w ćwiczeniu 2).</p>
       <ol class="steps">
-        <li data-reveal><b>Silnik OTP</b><p><i>easy-OTP → Setup → Download Java 8 JRE and OpenTripPlanner Jar</i>, folder np. <span class="path">C:\otp\</span>. Jeśli pobieranie nie działa: skopiuj <span class="path">silniki/otp/</span> z paczki i wskaż ścieżki w <i>Advanced</i>.</p></li>
+        <li data-reveal><b>Silnik OTP</b><p><i>easy-OTP → Setup → Download Java 8 JRE and OpenTripPlanner Jar</i>, folder np. <span class="path">C:\otp\</span>. Jeśli pobieranie nie działa: skopiuj folder <span class="path">otp/</span> z pendrive’a prowadzącego i wskaż ścieżki w <i>Advanced</i>.</p></li>
         <li data-reveal><b>Sprawdzenie</b><p><i>Diagnostics → Test OTP server</i>. Java i jar muszą być widoczne, zanim policzysz cokolwiek.</p></li>
         <li data-reveal><b>Dane w jednym folderze</b><p><span class="path">&lt;miasto&gt;.osm.pbf</span> z paczki i plik <span class="path">…_static_gtfs_2026-09-16.zip</span> do osobnego folderu. Słowo „gtfs” w nazwie pliku jest potrzebne, żeby OTP rozpoznał rozkład.</p></li>
         <li data-reveal><b>Izochrona co godzinę</b><p><i>Analysis → Generate isochrones over time</i>: punkt kliknięty na mapie (dworzec albo uczelnia), tryb TRANSIT, kierunek FROM, próg <code>30</code>, data 2026-09-16, okno 06:00–22:00, <b>interwał 60 min</b>. Wynik: 17 izochron, każda z polem <code>time</code>. Pierwszy przebieg buduje graf, to najdłuższy krok.</p></li>
@@ -282,7 +282,7 @@ const r5Algs: [string, string][] = [
 
       <div class="phase"><LineBullet label="A" line="blue" size="md" /><h3>Dane · 10 min</h3></div>
       <ol class="steps">
-        <li data-reveal><b>Silnik R5</b><p><i>Easy-R5 → Setup → Download R5 engine and Java 21</i>. Awaryjnie: <span class="path">silniki/r5/</span> z paczki.</p></li>
+        <li data-reveal><b>Silnik R5</b><p><i>Easy-R5 → Setup → Download R5 engine and Java 21</i>. Awaryjnie: folder <span class="path">r5/</span> z pendrive’a prowadzącego.</p></li>
         <li data-reveal><b>Dwa dni z nagrań</b><p><i>Wtyczki → Easy-R5 → Download transit recordings…</i>: twoje miasto, dzień <b>2026-08-26</b>, wariant <b>P50</b>. Potem drugi raz: <b>2026-09-16</b>, P50. Każdy dzień trafia do osobnego folderu i tak ma zostać.</p></li>
         <li data-reveal><b>Kontrola danych</b><p><i>Diagnostics → Check transit data</i> dla obu folderów, każdy z jego datą. Zero błędów oznacza, że można budować. Data bez kursów daje po cichu same trasy piesze, dlatego ten krok jest obowiązkowy.</p></li>
         <li data-reveal><b>Dwie sieci</b><p><i>Setup → Build R5 network</i> dwa razy: ten sam <span class="path">&lt;miasto&gt;.osm.pbf</span>, raz folder z 26.08, raz z 16.09.</p></li>
@@ -396,14 +396,14 @@ const r5Algs: [string, string][] = [
     <div class="col">
       <Kicker bullet="09" line="green" lane="L">Materiały</Kicker>
       <h2 class="h2">Paczka danych i silniki awaryjne</h2>
-      <p class="lead">Wszystko leży w wydaniach repozytorium. Pobierz tylko swoje miasto i tabele GUS. Silniki i rozkłady są na wypadek, gdyby pobieranie we wtyczce nie zadziałało.</p>
+      <p class="lead">Dane leżą w wydaniu repozytorium, każdy plik osobno. Pobierz tylko swoje miasto, granice i dane GUS. Rozkłady są na wypadek, gdyby pobieranie we wtyczce nie zadziałało.</p>
       <div class="downloads" data-reveal>
-        <div class="dl"><div><b>OSM przycięty do miasta</b><p><span class="path">osm/&lt;miasto&gt;.osm.pbf</span>, granica miasta z buforem 1 km. Dla GZM 41 gmin metropolii.</p></div><span class="size">2–73 MB</span></div>
-        <div class="dl"><div><b>Granica miasta</b><p><span class="path">granice/&lt;miasto&gt;_granica.gpkg</span>, EPSG:2180, z kodami TERYT gmin.</p></div><span class="size">&lt; 1 MB</span></div>
-        <div class="dl"><div><b>Obwody i rejony spisowe GUS</b><p><span class="path">gus/brec_2021_polska.gpkg</span>: warstwy <i>obwody_spisowe</i> i <i>rejony_statystyczne</i>, cała Polska.</p></div><span class="size">ok. 800 MB</span></div>
-        <div class="dl"><div><b>Tabele GUS NSP 2021</b><p><span class="path">gus/ludnosc_nsp_2021.xlsx</span>: ludność wg płci i grup wieku, arkusz na województwo. Obok cztery tabele o gospodarstwach i rodzinach.</p></div><span class="size">27–34 MB</span></div>
-        <div class="dl"><div><b>Rozkłady, awaryjnie</b><p><span class="path">gtfs/&lt;miasto&gt;/2026-08-26/</span> i <span class="path">2026-09-16/</span>, wariant planowy.</p></div><span class="size">do 50 MB</span></div>
-        <div class="dl"><div><b>Silniki, awaryjnie</b><p><span class="path">silniki/otp/</span>: Java 8 i OTP 1.5.0. <span class="path">silniki/r5/</span>: Java 21, R5 7.6 i skompilowany runner.</p></div><span class="size">156 / 392 MB</span></div>
+        <div class="dl"><div><b>OSM przycięty do miasta</b><p><span class="path">&lt;miasto&gt;.osm.pbf</span>, granica miasta z buforem 1 km. Dla GZM 41 gmin metropolii.</p></div><span class="size">2–76 MB</span></div>
+        <div class="dl"><div><b>Granice miast</b><p><span class="path">granice_miast.7z</span>: 15 plików <span class="path">&lt;miasto&gt;_granica.gpkg</span>, EPSG:2180, z kodami TERYT gmin.</p></div><span class="size">&lt; 1 MB</span></div>
+        <div class="dl"><div><b>Obwody i rejony spisowe GUS</b><p><span class="path">brec_2021_polska.7z</span> z plikiem <span class="path">brec_2021_polska.gpkg</span>: warstwy <i>obwody_spisowe</i> i <i>rejony_statystyczne</i>, cała Polska (814 MB po rozpakowaniu).</p></div><span class="size">238 MB</span></div>
+        <div class="dl"><div><b>Tabele GUS NSP 2021</b><p><span class="path">ludnosc_nsp_2021.xlsx</span>: ludność wg płci i grup wieku, arkusz na województwo. Obok cztery tabele o gospodarstwach i rodzinach.</p></div><span class="size">27–34 MB</span></div>
+        <div class="dl"><div><b>Rozkłady, awaryjnie</b><p><span class="path">&lt;miasto&gt;_static_gtfs_2026-08-26.zip</span> i <span class="path">…_2026-09-16.zip</span>, wariant planowy. Rozkłady P50 i P85 pobierasz we wtyczce albo z gtfs-dashboard.</p></div><span class="size">do 50 MB</span></div>
+        <div class="dl"><div><b>Silniki, awaryjnie</b><p>Na sali, u prowadzącego: <span class="path">otp/</span> (Java 8 i OTP 1.5.0) i <span class="path">r5/</span> (Java 21, R5 7.6 i skompilowany runner).</p></div><span class="size">pendrive</span></div>
       </div>
       <div class="btns">
         <Btn href={RELEASES} variant="accent" icon="download" external>Pobierz z wydań</Btn>
@@ -412,7 +412,7 @@ const r5Algs: [string, string][] = [
       </div>
       <div class="note" data-reveal>
         <h3>Plan B na sali</h3>
-        <p>Pobieranie silnika nie działa: skopiuj folder z paczki i wskaż ścieżki w <i>Advanced</i>. Pobieranie rozkładu nie działa: weź plik z <span class="path">gtfs/</span>. Komputer za słaby na Warszawę albo GZM: mniejsze miasto albo siatka 1000 m.</p>
+        <p>Pobieranie silnika nie działa: skopiuj folder z pendrive’a i wskaż ścieżki w <i>Advanced</i>. Pobieranie rozkładu nie działa: weź plik <span class="path">…_static_gtfs_….zip</span> z wydania. Komputer za słaby na Warszawę albo GZM: mniejsze miasto albo siatka 1000 m.</p>
       </div>
     </div>
   </section>

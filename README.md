@@ -28,18 +28,19 @@ Dev server serwuje pod `/gis-zajecia/`.
 
 ## Paczka danych (Releases, nie w gicie)
 
+Wydanie [`dane-2026-10`](https://github.com/GISBoost/gis-zajecia/releases/tag/dane-2026-10), każdy plik osobno:
+
 ```
-paczka/
-├── osm/<miasto>.osm.pbf              15 miast, OSM przycięty do granic miasta z buforem 1 km
-├── granice/<miasto>_granica.gpkg     granica miasta (GZM: 41 gmin wg GUS), EPSG:2180
-├── gtfs/<miasto>/<data>/…zip         rozkłady planowe z gtfs-dashboard, 2026-08-26 i 2026-09-16
-└── gus/
-    ├── brec_2021_polska.gpkg         obwody spisowe i rejony statystyczne, cała Polska
-    └── *.xlsx                        tabele GUS NSP 2021 (ludność, gospodarstwa, rodziny)
-silniki/
-├── otp/                              Temurin 8 JRE + otp-1.5.0-shaded.jar
-└── r5/                               Temurin 21 JDK + r5-v7.6-all.jar + skompilowany runner
+<miasto>.osm.pbf                        15 miast, OSM przycięty do granic miasta z buforem 1 km
+granice_miast.7z                        15 × <miasto>_granica.gpkg (GZM: 41 gmin wg GUS), EPSG:2180
+brec_2021_polska.7z                     obwody spisowe i rejony statystyczne, cała Polska (814 MB po rozpakowaniu)
+ludnosc_nsp_2021.xlsx, *.xlsx           tabele GUS NSP 2021 (ludność, gospodarstwa, rodziny)
+<miasto>_static_gtfs_<data>.zip         rozkłady planowe z gtfs-dashboard, 2026-08-26 i 2026-09-16
+SHA256SUMS.txt                          sumy kontrolne
 ```
+
+Silniki awaryjne (Temurin 8 JRE + OTP 1.5.0, Temurin 21 + R5 7.6 z runnerem) nie są w wydaniu:
+prowadzący ma je na sali na pendrivie.
 
 Jak powstała:
 
