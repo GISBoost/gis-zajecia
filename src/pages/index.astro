@@ -108,6 +108,10 @@ const r5Algs: [string, string][] = [
         <div class="item" data-reveal><LineBullet label="A" line="vermilion" size="sm" /><div><b>Bufor mierzy odległość</b><p>Okrąg 500 m wokół przystanku zakłada, że idzie się w linii prostej i że autobus czeka.</p></div></div>
         <div class="item" data-reveal><LineBullet label="B" line="blue" size="sm" /><div><b>Izochrona mierzy czas</b><p>Realna droga po ulicach i realny rozkład jazdy. Pieszo i rowerem liczona algorytmem A*, transportem zbiorowym A* z heurystyką Tung-Chew.</p></div></div>
       </div>
+      <div class="blocks" data-reveal style="border:0;gap:16px">
+        <Figure src="img/bufor-500m-izochrona-6min.jpg" alt="Okrąg 500 m wokół punktu i izochrona 6 minut pieszo, która wypełnia tylko część okręgu" caption="Okrąg 500 m i izochrona 6 min pieszo." />
+        <Figure src="img/bufor-1000m-izochrona-12min.jpg" alt="Okrąg 1000 m wokół punktu i izochrona 12 minut pieszo, która wypełnia tylko część okręgu" caption="Okrąg 1000 m i izochrona 12 min. Procent: jaka część okręgu jest naprawdę osiągalna." />
+      </div>
     </div>
   </section>
 
@@ -388,12 +392,12 @@ const r5Algs: [string, string][] = [
       <div class="phase"><LineBullet label="1" line="violet" size="md" /><h3>easy-GTFS-RT: nagrywanie i rekonstrukcja</h3></div>
       <p class="small">Repozytorium bez kodu aplikacji, same workflowy GitHub Actions. Codziennie dla każdego miasta:</p>
       <Pipeline steps={[
-        { data: 'pozycja co 60 s', name: 'Nagrywanie', text: 'Zapis feedu VehiclePositions: pojazd V jest w punkcie X i jedzie kursem K. Większość miast nie publikuje opóźnień, więc trzeba je wywnioskować.' },
-        { data: 'punkt na trasie', name: 'Dopasowanie', text: 'Każdą pozycję rzutujemy na trasę kursu: między którymi przystankami był pojazd.' },
-        { data: 'godzina minięcia', name: 'Interpolacja', text: 'Z dwóch kolejnych pozycji wyliczamy, kiedy pojazd minął przystanek.' },
-        { data: 'czas odcinka', name: 'Agregacja', text: 'Przejazdy tego samego odcinka z tej samej pory dnia łączymy: mediana (P50) i 85. percentyl (P85).' },
-        { data: 'stop_times.txt', name: 'Przebudowa', text: 'W oficjalnym GTFS podmieniamy czasy na zmierzone. Odcinki, których nikt nie nagrał, zostają z rozkładu.' },
-      ]} end={{ data: 'GTFS P50 i P85', name: 'Wydanie', text: 'Zwykły plik GTFS na każdy dzień: otworzy go easy-OTP, Easy-R5 i gtfs-dashboard.' }} />
+        { data: 'pozycja co 60 s', name: 'Nagrywanie', text: 'Co minutę: gdzie jest każdy pojazd i jakim kursem jedzie.' },
+        { data: 'punkt na trasie', name: 'Dopasowanie', text: 'Pozycję rzutujemy na trasę: między którymi przystankami jest pojazd.' },
+        { data: 'godzina minięcia', name: 'Interpolacja', text: 'Z dwóch pozycji: o której minął przystanek.' },
+        { data: 'czas odcinka', name: 'Agregacja', text: 'Przejazdy odcinka z tej samej pory dnia: P50 i P85.' },
+        { data: 'stop_times.txt', name: 'Przebudowa', text: 'Czasy z rozkładu zamieniamy na zmierzone.' },
+      ]} end={{ data: 'GTFS P50 i P85', name: 'Wydanie', text: 'Zwykły GTFS na każdy dzień, do OTP i R5.' }} />
       <Figure small src="img/rt-wydanie-github.jpg" alt="Strona wydania easy-GTFS-RT dla Łodzi z 16.09.2026 z listą plików" caption="Wydanie dla Łodzi z 16.09.2026: GTFS P50 i P85, rozkład planowy do porównania, wykres i tabela różnic." />
       <div class="btns">
         <Btn href="https://github.com/GISBoost/easy-GTFS-RT" variant="secondary" icon="open_in_new" external>easy-GTFS-RT</Btn>
