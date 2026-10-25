@@ -1,0 +1,10 @@
+---
+// Section kicker that doubles as a station on the scroll journey ([data-station]).
+import LineBullet from './LineBullet.astro';
+interface Props { bullet?: string; line?: string; lane?: 'L' | 'R'; terminus?: boolean; station?: boolean }
+const { bullet, line = 'vermilion', lane = 'R', terminus = false, station = true } = Astro.props;
+---
+<div class="kicker" data-station={station ? '' : undefined} data-lane={lane} data-terminus={terminus ? '' : undefined}>
+  {bullet && <LineBullet label={bullet} line={line} size="sm" />}
+  <span><slot /></span>
+</div>

@@ -1,0 +1,29 @@
+---
+// The transit-index "t" mark (same geometry and line rules), with this site's wordmark.
+import { TransitGeometry } from '../lib/geometry';
+interface Props { size?: number; wordmark?: string; credit?: boolean }
+const { size = 30, wordmark = 'Dostępność w QGIS', credit = false } = Astro.props;
+const g = { box: 48, w: 6, gap: 3, r: 22.5, stem: [[16, 3], [16, 40], [45, 40]] as [number, number][], offsets: [4.5, -4.5], bar: [[5, 12], [31, 12]] as [number, number][] };
+const stems = TransitGeometry.bundle(g.stem, g.offsets, g.r);
+const bar = TransitGeometry.path(g.bar, 1);
+const colors = ['var(--line-black)', 'var(--line-yellow)'];
+const uid = 'logo-mask-' + size;
+---
+<span class="logo" role="img" aria-label={wordmark + (credit ? ', GISBoost' : '')} style={`gap:${Math.round(size * 0.26)}px`}>
+  <svg width={size} height={size} viewBox={`0 0 ${g.box} ${g.box}`} aria-hidden="true">
+    <defs><mask id={uid} maskUnits="userSpaceOnUse" x="-2" y="-2" width={g.box + 4} height={g.box + 4}><rect x="-2" y="-2" width={g.box + 4} height={g.box + 4} fill="#fff" /><path d={bar} fill="none" stroke="#000" stroke-width={g.w + 2 * g.gap} stroke-linecap="round" /></mask></defs>
+    <g mask={`url(#${uid})`} fill="none" stroke-width={g.w} stroke-linecap="round" stroke-linejoin="round">{stems.map((d, i) => <path d={d} style={`stroke:${colors[i]}`} />)}</g>
+    <path d={bar} fill="none" stroke-width={g.w} stroke-linecap="round" style="stroke:var(--line-vermilion)" />
+  </svg>
+  <span class="words">
+    <span class="name" style={`font-size:${Math.round(size * 0.58)}px`}>{wordmark}</span>
+    {credit && <span class="credit" style={`font-size:${Math.max(10, Math.round(size * 0.24))}px;margin-top:${Math.round(size * 0.1)}px`}>GISBoost · Michał Kaczorowski</span>}
+  </span>
+</span>
+<style>
+  .logo{display:inline-flex;align-items:center;color:var(--ink)}
+  svg{display:block;flex-shrink:0;overflow:visible}
+  .words{display:flex;flex-direction:column;line-height:1}
+  .name{font-weight:700;letter-spacing:-0.035em;white-space:nowrap}
+  .credit{color:var(--ink-3);white-space:nowrap}
+</style>

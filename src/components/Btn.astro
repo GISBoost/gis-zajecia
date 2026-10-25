@@ -1,0 +1,23 @@
+---
+// Link styled as the transit-index Button (primary / accent / secondary / ghost).
+interface Props { href: string; variant?: 'primary' | 'accent' | 'secondary' | 'ghost'; icon?: string; iconLeft?: string; size?: 'sm' | 'md'; external?: boolean }
+const { href, variant = 'primary', icon, iconLeft, size = 'md', external = false } = Astro.props;
+---
+<a class={`btn ${variant} ${size}`} href={href} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}>
+  {iconLeft && <span class="ms" aria-hidden="true">{iconLeft}</span>}<slot />{icon && <span class="ms" aria-hidden="true">{icon}</span>}
+</a>
+<style>
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 18px;box-sizing:border-box;font:700 15px/1 var(--font-sans);letter-spacing:-0.005em;border:var(--border-w) solid var(--ink);text-decoration:none;white-space:nowrap;transition:background var(--dur-fast) var(--ease-transit),color var(--dur-fast) var(--ease-transit),border-color var(--dur-fast) var(--ease-transit)}
+  .btn.sm{height:32px;padding:0 12px;font-size:13px;gap:6px}
+  .btn:active{transform:translateY(1px)}
+  .primary{background:var(--ink);color:var(--paper)}
+  .primary:hover{background:var(--ink-2);border-color:var(--ink-2);color:var(--paper)}
+  .accent{background:var(--poster-red);border-color:var(--poster-red);color:#fff}
+  .accent:hover{background:var(--poster-red-dark);border-color:var(--poster-red-dark);color:#fff}
+  .secondary{background:transparent;color:var(--ink)}
+  .secondary:hover{background:var(--ink);color:var(--paper)}
+  .ghost{background:transparent;border-color:transparent;color:var(--ink)}
+  .ghost:hover{background:var(--paper-2);color:var(--ink)}
+  .ms{font-size:20px}
+  .btn.sm .ms{font-size:16px}
+</style>

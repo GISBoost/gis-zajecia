@@ -1,0 +1,35 @@
+---
+// Port of transit-index RouteStrip: a line with stops and rotated stop names, used as the
+// lesson timeline. `stops[i].time` is shown under the stop in tabular figures.
+interface Stop { name: string; time?: string; big?: boolean }
+interface Props { stops: Stop[]; line?: string; thickness?: number }
+const { stops, line = 'vermilion', thickness = 10 } = Astro.props;
+const n = stops.length;
+const LH = 120;
+const DOT = 28;
+---
+<div class="scroll" data-reveal>
+  <div class="strip" style={`grid-template-columns:repeat(${n},minmax(0,1fr))`}>
+    <div class="bar" data-bar style={`left:calc(100% / ${2 * n});right:calc(100% / ${2 * n});top:${LH + DOT / 2 - thickness / 2}px;height:${thickness}px;background:var(--line-${line})`}></div>
+    {stops.map((s) => (
+      <div class="stop">
+        <div class="lab" style={`height:${LH}px`}><span class={s.big ? 'b' : ''}>{s.name}</span></div>
+        <div class="dotrow" style={`height:${DOT}px`}><span class={s.big ? 'dot big' : 'dot'} style={s.big ? '' : `border-color:var(--line-${line})`}></span></div>
+        {s.time && <span class="time">{s.time}</span>}
+      </div>
+    ))}
+  </div>
+</div>
+<style>
+  .scroll{overflow-x:auto;margin-top:28px}
+  .strip{position:relative;display:grid;min-width:640px;font-family:var(--font-condensed);color:var(--ink)}
+  .bar{position:absolute;transform-origin:left center}
+  .stop{position:relative;display:flex;flex-direction:column;align-items:center;min-width:0}
+  .lab{width:100%;position:relative}
+  .lab span{position:absolute;left:50%;bottom:4px;transform-origin:0 100%;transform:rotate(-40deg);white-space:nowrap;font-size:14px;padding-left:6px}
+  .lab span.b{font-weight:700}
+  .dotrow{display:flex;align-items:center}
+  .dot{width:16px;height:16px;border-radius:50%;background:var(--white);border:3px solid;box-sizing:border-box;position:relative;z-index:1}
+  .dot.big{width:24px;height:24px;border:4px solid var(--ink)}
+  .time{margin-top:6px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+</style>

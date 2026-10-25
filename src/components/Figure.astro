@@ -1,0 +1,18 @@
+---
+// Flat image or video framed with a 2px ink border (design rule: imagery stays flat).
+interface Props { src: string; alt: string; caption?: string; video?: boolean }
+const { src, alt, caption, video = false } = Astro.props;
+const url = import.meta.env.BASE_URL + src;
+---
+<figure class="fig" data-reveal>
+  {video
+    ? <video src={url} aria-label={alt} autoplay muted loop playsinline preload="metadata"></video>
+    : <img src={url} alt={alt} loading="lazy" decoding="async" />}
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+<style>
+  .fig{margin:28px 0 0;border:var(--border-w) solid var(--ink);background:var(--white)}
+  img,video{display:block;width:100%;height:auto}
+  figcaption{border-top:var(--border-w) solid var(--ink);padding:10px 14px;font:400 14px/1.4 var(--font-condensed);background:var(--paper-2)}
+  @media (prefers-reduced-motion: reduce){video{animation:none}}
+</style>

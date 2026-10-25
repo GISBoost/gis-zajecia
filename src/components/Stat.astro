@@ -1,0 +1,27 @@
+---
+// Port of transit-index Stat: poster figure with optional vermilion misregistration.
+interface Props { value: string; unit?: string; label?: string; size?: 'md' | 'lg' | 'xl'; misregister?: boolean }
+const { value, unit, label, size = 'lg', misregister = false } = Astro.props;
+const SZ = { md: { v: 48, u: 18, l: 14 }, lg: { v: 96, u: 28, l: 16 }, xl: { v: 200, u: 44, l: 18 } } as const;
+const s = SZ[size];
+const num = `font-size:min(${s.v}px, ${s.v / 9.6}vw + 24px)`;
+---
+<div class="stat">
+  <div class="row" style={`gap:${Math.round(s.u * 0.4)}px`}>
+    <span class="fig">
+      {misregister && <span aria-hidden="true" class="num mis" style={num}>{value}</span>}
+      <span class="num" style={num}>{value}</span>
+    </span>
+    {unit && <span class="unit" style={`font-size:${s.u}px`}>{unit}</span>}
+  </div>
+  {label && <div class="label" style={`font-size:${s.l}px`}>{label}</div>}
+</div>
+<style>
+  .stat{display:flex;flex-direction:column;gap:10px;color:var(--ink)}
+  .row{display:flex;align-items:baseline}
+  .fig{position:relative;display:inline-block}
+  .num{position:relative;font-weight:700;line-height:.88;letter-spacing:-0.045em;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .mis{position:absolute;left:.035em;top:.03em;color:var(--poster-red)}
+  .unit{font-weight:700;letter-spacing:-0.02em}
+  .label{line-height:1.4;max-width:420px;text-wrap:pretty}
+</style>

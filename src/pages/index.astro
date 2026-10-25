@@ -1,0 +1,316 @@
+---
+import Base from '../layouts/Base.astro';
+import Kicker from '../components/Kicker.astro';
+import Stat from '../components/Stat.astro';
+import Btn from '../components/Btn.astro';
+import Figure from '../components/Figure.astro';
+import RouteStrip from '../components/RouteStrip.astro';
+import LineBullet from '../components/LineBullet.astro';
+import Logo from '../components/Logo.astro';
+
+const RELEASES = 'https://github.com/GISBoost/gis-zajecia/releases';
+const MAPY = 'https://gisboost.github.io/mapy-analizy/';
+
+const plan = [
+  { name: 'Start i instalacja', time: '0:00', big: true },
+  { name: 'Bufor, izochrona, czas', time: '0:05' },
+  { name: 'Jak działa OTP', time: '0:15' },
+  { name: 'Ćwiczenie 1: izochrony', time: '0:30', big: true },
+  { name: 'Przerwa', time: '0:50' },
+  { name: 'Czym różni się R5', time: '0:55' },
+  { name: 'Ćwiczenie 2: dwa dni', time: '1:05', big: true },
+  { name: 'Rozkład a rzeczywistość', time: '1:40' },
+  { name: 'Podsumowanie', time: '1:52', big: true },
+];
+
+const cities = ['Elbląg', 'Gdańsk', 'GZM (41 gmin)', 'Kielce', 'Kraków', 'Łódź', 'Lublin', 'Poznań', 'Przemyśl', 'Radom', 'Rybnik', 'Rzeszów', 'Suwałki', 'Szczecin', 'Warszawa'];
+
+const otpAnalyses: [string, string, string][] = [
+  ['Dokąd dojadę o 8:00?', 'Generate isochrones', 'Zasięg 15/30/45 min z dworca albo uczelni, kierunek „z” albo „do” punktu.'],
+  ['Jak zasięg zmienia się w ciągu dnia?', 'Generate isochrones over time', 'Izochrona co 15 min od 6:00 do 22:00, animacja w Temporal Controller.'],
+  ['Jak długo miejsce jest dobrze obsłużone?', 'Run temporal accessibility', 'Ile minut z 16 godzin heks jest w zasięgu 30 min; 4 klasy obsługi.'],
+  ['Ilu mieszkańców to dotyczy?', 'Prepare student layer · Population overlay', 'Dane GUS NSP 2021 z obwodów spisowych przeniesione na heksy.'],
+  ['Co zmienia weekend albo nowa linia?', 'Compare temporal accessibility', 'Mapa różnic dwóch scenariuszy.'],
+  ['Ile usług mam w zasięgu?', 'Run service coverage', 'Liczba aptek albo sklepów w 10 min pieszo, dla każdej komórki.'],
+  ['Ile jadę do szpitala z każdego heksa?', 'Run origin-destination times · Run travel-time matrix', 'Czas, przesiadki, czekanie; macierz do modelu grawitacyjnego.'],
+  ['Co da nowa kładka?', 'Własna sieć OSM', 'Zmieniony plik .osm.pbf jako scenariusz inwestycji.'],
+];
+
+const r5Algs: [string, string][] = [
+  ['Run travel time matrix', 'N punktów × M celów, percentyle po oknie odjazdów.'],
+  ['Run accessibility', 'Ile celów (szkół, miejsc pracy) w progu czasu z każdego punktu.'],
+  ['Run service minutes', 'Ile minut z okna odjazdów daje dojazd w progu.'],
+  ['Run competitive accessibility (2SFCA)', 'Np. lekarze na 1000 mieszkańców, z konkurencją o miejsca.'],
+  ['Summarize accessibility equity', 'Odsetek mieszkańców z dostępem, Gini, podział na dzielnice.'],
+  ['Generate isochrones', 'Izochrony konturowane w QGIS z siatki czasów.'],
+  ['Build scenario · Compare scenarios', 'Nowa linia, usunięta trasa, inna częstotliwość; mapa różnic.'],
+];
+---
+<Base title="Dostępność transportu w QGIS — zajęcia GIS" description="Materiały do laboratorium: easy-OTP i easy-R5 w QGIS. Izochrony, dostępność do szkół, wakacje vs rok szkolny, dane GUS NSP 2021.">
+
+  <!-- 00 · HERO -->
+  <section id="top" class="sec hero">
+    <div class="col" data-content-edge>
+      <div class="kicker">Geograficzne systemy informacji przestrzennej · II stopień planowania przestrzennego</div>
+      <h1 class="h1">Ile miasta mieści się w 30 minutach?</h1>
+      <p class="lead">Dwie godziny w QGIS: od izochrony z jednego przystanku do odpowiedzi, ilu uczniów ma szkołę w zasięgu transportu publicznego w wakacje, a ilu we wrześniu. Wszystko wyklikane, bez wiersza poleceń.</p>
+      <div data-station data-lane="R" style="position:relative;margin-top:40px;padding-right:130px">
+        <Stat size="xl" value="30" unit="min" label="próg czasu podróży od drzwi do drzwi: dojście, czekanie, przejazd, przesiadki" misregister />
+        <div class="stamp" aria-hidden="true"><span>Laboratorium</span><b>2 h</b><span>QGIS</span></div>
+      </div>
+      <div class="btns">
+        <Btn href="#materialy" variant="accent" icon="south">Materiały do pobrania</Btn>
+        <Btn href="#cw1" variant="secondary" icon="map">Ćwiczenie 1</Btn>
+        <Btn href="#cw2" variant="secondary" icon="compare_arrows">Ćwiczenie 2</Btn>
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 · PLAN -->
+  <section id="plan" class="sec">
+    <div class="col">
+      <Kicker bullet="01" line="orange" lane="L">Plan zajęć</Kicker>
+      <h2 class="h2">Dziewięć przystanków, 120 minut</h2>
+      <p class="lead">Na samym początku instalujecie obie wtyczki i uruchamiacie pobieranie silników. Pobieranie trwa w tle, kiedy opowiadam o metodzie.</p>
+      <RouteStrip stops={plan} line="orange" />
+      <div class="items">
+        <div class="item" data-reveal><LineBullet label="1" line="black" size="sm" /><div><b>Wybierz miasto</b><p>Jedno z 15 miast z indeksu nagrań GTFS. Duże sieci (Warszawa, GZM) liczą się najdłużej.</p></div></div>
+        <div class="item" data-reveal><LineBullet label="2" line="black" size="sm" /><div><b>Zainstaluj wtyczki</b><p><i>Wtyczki → Zarządzaj wtyczkami</i>, wyszukaj <b>easy-OTP</b> i <b>Easy-R5</b>. Obie są w repozytorium wtyczek QGIS.</p></div></div>
+      </div>
+      <div class="cities" data-reveal>{cities.map((c) => <span class="city">{c}</span>)}</div>
+    </div>
+  </section>
+
+  <!-- 02 · TEORIA -->
+  <section id="teoria" class="sec">
+    <div class="col">
+      <Kicker bullet="02" line="yellow" lane="R">Od bufora do czasu</Kicker>
+      <h2 class="h2">Bufor mierzy odległość. Pasażer liczy minuty.</h2>
+      <p class="lead">Okrąg 500 m wokół przystanku zakłada, że idzie się w linii prostej i że autobus czeka. Izochrona liczy realną drogę po ulicach i realny rozkład jazdy. Analiza w czasie idzie krok dalej: sprawdza, jak ten zasięg zmienia się w ciągu dnia.</p>
+      <div class="blocks" data-reveal>
+        <div class="block paper"><h3>GTFS.zip</h3><p>Rozkład jazdy w standardzie Google: przystanki, linie, kursy i kalendarz. Publikują go przewoźnicy, za darmo.</p></div>
+        <div class="block mustard"><h3>map.osm.pbf</h3><p>Sieć ulic i chodników z OpenStreetMap. Po niej liczone jest dojście do przystanku i przesiadki.</p></div>
+      </div>
+      <div class="items">
+        <div class="item" data-reveal><LineBullet label="A" line="vermilion" size="sm" /><div><b>Dostępność aktywna</b><p>„Dokąd dojadę z punktu X?” Punkt jest źródłem, mierzymy zasięg na zewnątrz.</p></div></div>
+        <div class="item" data-reveal><LineBullet label="P" line="blue" size="sm" /><div><b>Dostępność pasywna</b><p>„Skąd da się dojechać do celu Y?” Punkt jest celem, mierzymy obszar dojazdu, np. do kampusu.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 · easy-OTP -->
+  <section id="otp" class="sec">
+    <div class="col">
+      <Kicker bullet="03" line="vermilion" lane="L">easy-OTP · OpenTripPlanner 1.5</Kicker>
+      <h2 class="h2">Silnik planera podróży w Processing Toolbox</h2>
+      <p class="lead">OpenTripPlanner to otwarty silnik, na którym działają planery podróży w Norwegii, Finlandii i w ZTM Poznań. Z OSM i GTFS buduje jeden graf. Trasy piesze liczy algorytmem A*, transport zbiorowy A* z heurystyką Tung-Chew. Wtyczki QGIS takie jak Valhalla, ORS Tools czy QNEAT3 nie dają izochron transportu zbiorowego. OTP daje.</p>
+      <Figure src="img/czas-dojazdu-przesiadki.jpg" alt="Dwie mapy Łodzi na heksach: czas dojazdu z Politechniki Łódzkiej i liczba przesiadek" caption="Czas dojazdu z Politechniki Łódzkiej transportem publicznym (z lewej) i liczba potrzebnych przesiadek (z prawej)." />
+
+      <h3 class="h3">Jakie pytania można zadać</h3>
+      <table class="tbl" data-reveal>
+        <thead><tr><th>Pytanie</th><th>Algorytm</th><th>Przykład</th></tr></thead>
+        <tbody>{otpAnalyses.map(([q, a, e]) => <tr><td>{q}</td><td class="alg">{a}</td><td>{e}</td></tr>)}</tbody>
+      </table>
+
+      <h3 class="h3">Jeden do wielu, wiele do wielu</h3>
+      <p class="small">Zapytanie z jednego punktu do 2700 celów i zapytanie z 30 punktów do 30 celów to ta sama operacja w różnej skali. Liczba zapytań rośnie szybko, dlatego potrzebna jest automatyzacja.</p>
+      <div class="blocks" data-reveal style="border:0;gap:16px">
+        <Figure src="img/one-to-many.jpg" alt="Połączenia z jednego punktu do wielu celów na mapie heksów" caption="Jeden do wielu" />
+        <Figure src="img/many-to-many.jpg" alt="Siatka połączeń wiele do wielu" caption="Wiele do wielu" />
+      </div>
+
+      <h3 class="h3">Ile Żabek w 10 minut pieszo?</h3>
+      <p class="small">Dla każdego sklepu jedna powierzchnia czasu dojścia, potem zliczenie, ile powierzchni mieści się w progu w każdej komórce. Analiza temporalna to jeden punkt i wiele momentów. Tutaj odwrotnie: jeden moment i wiele punktów, bo pieszo pora dnia nie ma znaczenia.</p>
+      <Figure src="img/zabka-10min.jpg" alt="Mapa liczby sklepów osiągalnych w 10 minut pieszo" />
+    </div>
+  </section>
+
+  <!-- 04 · METODA TEMPORALNA -->
+  <section id="metoda" class="sec">
+    <div class="col">
+      <Kicker bullet="04" line="green" lane="R">Analiza w czasie</Kicker>
+      <h2 class="h2">961 powierzchni zamiast jednej izochrony</h2>
+      <p class="lead">Od 6:00 do 22:00 co minutę jedna powierzchnia czasu podróży. Dla każdego heksa liczymy, przez ile minut jest w zasięgu 30 min, i dzielimy wynik na 4 klasy obsługi: stała, regularna, okresowa, epizodyczna.</p>
+      <div class="kpis" data-reveal>
+        <Stat size="md" value="961" label="powierzchni czasu, co 1 min" />
+        <Stat size="md" value="800 m" label="maksymalne dojście do przystanku" />
+        <Stat size="md" value="1,3 m/s" label="prędkość chodu (4,68 km/h)" />
+      </div>
+      <Figure src="img/powierzchnia-czasu.jpg" alt="Raster czasu podróży od centrum, od czerwonego (blisko) do zielonego (daleko)" caption="Jedna powierzchnia czasu podróży. Analiza temporalna to 961 takich rastrów." />
+      <Figure src="video/izochrony-w-czasie.mp4" video alt="Animacja izochron w czterech miastach od 6:00 do 22:00" caption="Zasięg 30 min w ciągu doby, cztery miasta." />
+
+      <div class="note" data-reveal>
+        <h3>12 kroków w R → kilka algorytmów wtyczki</h3>
+        <p>W badaniu do artykułu każdy krok był ręczny: siatka, OSM, GTFS, budowa grafu, start serwera, pętla 961 zapytań, wirtualny raster, zliczanie w PyQGIS, klasyfikacja, nakładka GUS, mapa. W easy-OTP kroki 4–10 robi jeden algorytm, <i>Run temporal accessibility</i>, z paskiem postępu.</p>
+      </div>
+      <Figure src="video/easy-otp-przebieg.mp4" video alt="Przyspieszony zapis przebiegu analizy w easy-OTP" caption="Przebieg analizy w easy-OTP, przyspieszony." />
+
+      <h3 class="h3">Wynik: dostępność kampusów w 6 miastach</h3>
+      <p class="small">Artykuł <i>Spatio-temporal and demographic distribution of public transport accessibility</i> (Kaczorowski, Wróblewski): Warszawa, Poznań, Kraków, Łódź, Wrocław, Gdańsk. Kolej wiąże się z wyższą i stabilniejszą dostępnością, widać wyraźną różnicę między centrum a peryferiami.</p>
+      <Figure src="img/studenci-ul.jpg" alt="Mapa Łodzi: klasy obsługi w 30 min do Uniwersytetu Łódzkiego i liczba osób w wieku studenckim w heksach" caption="Uniwersytet Łódzki: klasy obsługi (30 min) i liczba osób w wieku 20–29 lat w heksie (GUS NSP 2021)." />
+
+      <div class="items">
+        <div class="item" data-reveal><LineBullet label="!" line="black" size="sm" /><div><b>GTFS to plan, nie rzeczywistość</b><p>Model nie zna opóźnień ani odwołanych kursów. Wynik bywa zbyt optymistyczny. Do tego wracamy na końcu zajęć.</p></div></div>
+        <div class="item" data-reveal><LineBullet label="!" line="black" size="sm" /><div><b>OTP 1.5 jest stary</b><p>Wymaga Javy 8, powierzchnie mają limit 120 min, duże obszary liczą się długo. Do wielu punktów naraz lepszy jest R5.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 · ĆWICZENIE 1 -->
+  <section id="cw1" class="sec">
+    <div class="col">
+      <Kicker bullet="05" line="vermilion" lane="L">Ćwiczenie 1 · 20 min</Kicker>
+      <h2 class="h2">Izochrony z jednego punktu, rano i wieczorem</h2>
+      <p class="lead">Potrzebne: plik OSM twojego miasta i rozkład z 16.09.2026 (pobierzesz go w ćwiczeniu 2 albo weźmiesz z paczki).</p>
+      <ol class="steps">
+        <li data-reveal><b>Silnik OTP</b><p><i>easy-OTP → Setup → Download Java 8 JRE and OpenTripPlanner Jar</i>, folder np. <span class="path">C:\otp\</span>. Jeśli pobieranie nie działa: skopiuj <span class="path">silniki/otp/</span> z paczki i wskaż ścieżki w <i>Advanced</i>.</p></li>
+        <li data-reveal><b>Sprawdzenie</b><p><i>Diagnostics → Test OTP server</i>. Java i jar muszą być widoczne, zanim policzysz cokolwiek.</p></li>
+        <li data-reveal><b>Dane w jednym folderze</b><p><span class="path">&lt;miasto&gt;.osm.pbf</span> z paczki i plik <span class="path">…_static_gtfs_2026-09-16.zip</span> do osobnego folderu. Słowo „gtfs” w nazwie pliku jest potrzebne, żeby OTP rozpoznał rozkład.</p></li>
+        <li data-reveal><b>Izochrony o 8:00</b><p><i>Analysis → Generate isochrones</i>: punkt kliknięty na mapie (dworzec albo uczelnia), tryb TRANSIT, progi <code>15,30,45</code>, data 2026-09-16, godzina 08:00. Pierwszy przebieg buduje graf, to najdłuższy krok.</p></li>
+        <li data-reveal><b>To samo o 22:00</b><p>Drugi przebieg używa zbudowanego grafu, więc jest szybki. Porównaj obie warstwy.</p></li>
+        <li data-reveal><b>Zasięg w ciągu dnia</b><p><i>Generate isochrones over time</i>: ten sam punkt, próg 30 min, 6:00–22:00 co 15 min. Potem <i>Widok → Panele → Temporal Controller</i> i odtwórz animację.</p></li>
+      </ol>
+      <Figure src="img/izochrony-otp.jpg" alt="Izochrony 15, 30 i 45 minut wygenerowane w easy-OTP" caption="Wynik Generate isochrones: kilka progów w jednym przebiegu." />
+      <div class="note" data-reveal><h3>Do dyskusji</h3><p>Gdzie zasięg rośnie skokowo wzdłuż kolei i tramwaju, a gdzie jest poszarpany? Dlaczego wieczorem kurczy się bardziej na peryferiach niż w centrum?</p></div>
+    </div>
+  </section>
+
+  <!-- 06 · easy-R5 -->
+  <section id="r5" class="sec">
+    <div class="col">
+      <Kicker bullet="06" line="sky" lane="R">Easy-R5 · Conveyal R5</Kicker>
+      <h2 class="h2">Każda minuta okna odjazdów, nie jeden odjazd</h2>
+      <p class="lead">R5 liczy trasy dla każdej minuty okna, np. 7:00–9:00, i podaje percentyle: medianę i wariant ostrożny. Wynik nie zależy od tego, czy trafiliśmy na odjazd o 7:13 czy o 7:15, dlatego dobrze nadaje się do porównań. Linie jeżdżące „co 10 minut” bez godzin odjazdu losuje metodą Monte Carlo.</p>
+      <div class="kpis" data-reveal>
+        <Stat size="md" value="9 s" label="macierz 1000 × 1000 w R5 (Higgins i in., 2022)" />
+        <Stat size="md" value="&gt; 24 h" label="ta sama macierz w OTP przez R, bez wyniku" />
+        <Stat size="md" value="120" label="minut okna odjazdów domyślnie" />
+      </div>
+      <table class="tbl" data-reveal>
+        <thead><tr><th>Algorytm</th><th>Co liczy</th></tr></thead>
+        <tbody>{r5Algs.map(([a, d]) => <tr><td class="alg">{a}</td><td>{d}</td></tr>)}</tbody>
+      </table>
+
+      <h3 class="h3">Przykład: szkoły w Łodzi i jedna nowa linia tramwajowa</h3>
+      <p class="small">97,0% mieszkańców Łodzi ma szkołę w zasięgu 30 minut. Narysowana w scenariuszu linia tramwajowa obejmuje dodatkowe 6280 osób. 2SFCA pokazuje, że tylko 44% z nich ma tyle szkół na mieszkańca co średnia miasta (82% w centrum, 35% poza nim).</p>
+      <div class="blocks" data-reveal style="border:0;gap:16px">
+        <Figure src="img/r5-demo_v03_baseline.jpg" alt="Łódź: dostępność do szkół w 30 minut, stan obecny" caption="Stan obecny" />
+        <Figure src="img/r5-demo_v03_porownanie.jpg" alt="Łódź: różnica dostępności po dodaniu linii tramwajowej" caption="Scenariusz z nową linią: zmiana" />
+      </div>
+      <div class="btns">
+        <Btn href={MAPY + 'izochrony-transport/'} variant="secondary" icon="open_in_new" external>Izochrony na żywo</Btn>
+        <Btn href={MAPY + 'uczelnie-dostepnosc/'} variant="secondary" icon="open_in_new" external>Dojazd na uczelnię, 6 miast</Btn>
+        <Btn href={MAPY + 'gdzie-mieszkac-lodz/'} variant="secondary" icon="open_in_new" external>Gdzie mieszkać w Łodzi</Btn>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 · ĆWICZENIE 2 -->
+  <section id="cw2" class="sec">
+    <div class="col">
+      <Kicker bullet="07" line="blue" lane="L">Ćwiczenie 2 · 35 min</Kicker>
+      <h2 class="h2">Wakacje czy rok szkolny: ilu uczniów dojedzie do szkoły?</h2>
+      <p class="lead">Ta sama analiza dla dwóch środ: 26.08.2026 (wakacje) i 16.09.2026 (rok szkolny). Wynik w liczbie mieszkańców w wieku 10–19 lat, nie tylko w heksach.</p>
+
+      <div class="phase"><LineBullet label="A" line="blue" size="md" /><h3>Dane · 10 min</h3></div>
+      <ol class="steps">
+        <li data-reveal><b>Silnik R5</b><p><i>Easy-R5 → Setup → Download R5 engine and Java 21</i>. Awaryjnie: <span class="path">silniki/r5/</span> z paczki.</p></li>
+        <li data-reveal><b>Dwa dni rozkładu</b><p><i>Wtyczki → Easy-R5 → Download transit recordings…</i>: twoje miasto, dzień <b>2026-08-26</b>, wariant <i>scheduled</i>. Potem drugi raz: <b>2026-09-16</b>. Każdy dzień trafia do osobnego folderu i tak ma zostać.</p></li>
+        <li data-reveal><b>Kontrola danych</b><p><i>Diagnostics → Check transit data</i> dla obu folderów, każdy z jego datą. Zero błędów oznacza, że można budować. Data bez kursów daje po cichu same trasy piesze, dlatego ten krok jest obowiązkowy.</p></li>
+        <li data-reveal><b>Dwie sieci</b><p><i>Setup → Build R5 network</i> dwa razy: ten sam <span class="path">&lt;miasto&gt;.osm.pbf</span>, raz folder z 26.08, raz z 16.09.</p></li>
+      </ol>
+
+      <div class="phase"><LineBullet label="B" line="blue" size="md" /><h3>Siatka, szkoły, ludność · 10 min</h3></div>
+      <ol class="steps">
+        <li data-reveal><b>Siatka heksagonalna</b><p>Wczytaj <span class="path">&lt;miasto&gt;_granica.gpkg</span>. <i>Processing → Create grid</i>: heksagony, 500 m, EPSG:2180, zasięg z granicy. Potem <i>Extract by location</i> (przecina granicę) i <i>Centroids</i>. W kalkulatorze pól dodaj <code>hex_id</code> = <code>@row_number</code>.</p></li>
+        <li data-reveal><b>Szkoły z OSM</b><p>Przeciągnij <span class="path">&lt;miasto&gt;.osm.pbf</span> do QGIS (warstwy <i>points</i> i <i>multipolygons</i>). Filtr: <code>"other_tags" LIKE '%"amenity"=&gt;"school"%'</code>. Z poligonów zrób <i>Centroids</i> i scal obie warstwy (<i>Merge vector layers</i>).</p></li>
+        <li data-reveal><b>Ludność z GUS</b>
+          <ul>
+            <li>z <span class="path">brec_2021_polska.gpkg</span> (warstwa <i>obwody_spisowe</i>) wytnij swoje miasto: <i>Extract by location</i> z granicą;</li>
+            <li><i>Easy-R5 → Prepare population layer</i>: <span class="path">ludnosc_nsp_2021.xlsx</span>, arkusz = twoje województwo, kolumna <code>10-19</code>, klucz <code>OBWOD</code>;</li>
+            <li><i>Population overlay</i>: ludność z obwodów na heksy.</li>
+          </ul>
+        </li>
+      </ol>
+
+      <div class="phase"><LineBullet label="C" line="blue" size="md" /><h3>Analiza i porównanie · 15 min</h3></div>
+      <ol class="steps">
+        <li data-reveal><b>Dwa przebiegi, identyczne parametry</b><p><i>Run accessibility</i>: origins = centroidy heksów (<code>hex_id</code> jako identyfikator), destinations = szkoły, okno 7:00–9:00, percentyl 50, próg 30 min. Raz sieć i data 26.08, raz 16.09.</p></li>
+        <li data-reveal><b>Porównanie</b><p><i>Scenarios → Compare scenarios</i>: A = 26.08, B = 16.09, pole dostępności, „wyżej znaczy lepiej”. Narzędzie odmówi porównania, jeśli metoda się różni. To celowe zabezpieczenie.</p></li>
+        <li data-reveal><b>Mapa</b><p><i>Join attributes by field value</i> z heksami po <code>hex_id</code>, styl według <code>diff</code>.</p></li>
+        <li data-reveal><b>Kontrola ręczna</b><p>Kalkulator pól: <code>"value_b" - "value_a"</code>. Musi wyjść to samo co <code>diff</code>.</p></li>
+        <li data-reveal><b>Wynik w ludziach</b><p><i>Summarize accessibility equity</i> dla obu przebiegów z ludnością 10–19: „X% uczniów ma szkołę w 30 min w wakacje, Y% we wrześniu”.</p></li>
+      </ol>
+      <div class="note" data-reveal>
+        <h3>Uwaga: nie każda różnica to efekt rozkładu</h3>
+        <p>Dwa dni różnią się też zwykłą zmiennością. Żeby oddzielić efekt rozkładu, porównuje się dodatkowo dwa dni z tego samego okresu (para kontrolna). Tak zrobiona jest analiza zmiany sieci w Łodzi z 5.10.2026.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 · GTFS-RT -->
+  <section id="rzeczywistosc" class="sec">
+    <div class="col">
+      <Kicker bullet="08" line="violet" lane="R">Rozkład a rzeczywistość</Kicker>
+      <h2 class="h2">Jak było naprawdę, a nie w rozkładzie</h2>
+      <p class="lead">Obie wtyczki domyślnie liczą na rozkładzie. Pojazdy co kilkanaście sekund wysyłają swoje pozycje w standardzie GTFS-Realtime. Z tych nagrań można odtworzyć rozkład zrealizowany i policzyć dostępność jeszcze raz.</p>
+      <ol class="flow">
+        <li data-reveal><LineBullet label="1" line="sky" size="md" /><div><b>Nagrywanie</b><p>easy-GTFS-RT codziennie nagrywa pozycje pojazdów w około 25 miastach.</p></div></li>
+        <li data-reveal><LineBullet label="2" line="sky" size="md" /><div><b>Rekonstrukcja</b><p>Dopasowanie pozycji do kursów z rozkładu i czasy przejazdu między przystankami: mediana (P50) i wariant ostrożny (P85).</p></div></li>
+        <li data-reveal><LineBullet label="3" line="sky" size="md" /><div><b>Publikacja</b><p>gtfs-dashboard: dla każdego miasta i dnia rozkład planowy i zrealizowany do pobrania.</p></div></li>
+        <li data-reveal><LineBullet label="4" line="sky" size="md" /><div><b>Analiza</b><p>Ten sam plik w Easy-R5: <i>Download transit recordings…</i>, wariant P50 zamiast scheduled.</p></div></li>
+      </ol>
+      <div class="sign" data-reveal>
+        <div class="meta"><span>Zadanie domowe</span><span>do wyboru</span></div>
+        <div class="body">
+          <div class="ttl">Powtórz ćwiczenie 2 na wariancie P50</div>
+          <div class="sub">O ile rzeczywistość odbiega od planu? Albo: analiza w czasie w easy-OTP dla obu dni i Compare temporal accessibility. Albo: nowa linia w Build scenario i ilu uczniom pomoże.</div>
+        </div>
+      </div>
+      <div class="btns">
+        <Btn href="https://gisboost.github.io/gtfs-dashboard/" variant="secondary" icon="open_in_new" external>gtfs-dashboard</Btn>
+        <Btn href={MAPY + 'opoznienia-dostepnosc/'} variant="secondary" icon="open_in_new" external>Opóźnienia a dostępność</Btn>
+        <Btn href={MAPY} variant="ghost" icon="open_in_new" external>Wszystkie mapy analiz</Btn>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 · MATERIAŁY -->
+  <section id="materialy" class="sec">
+    <div class="col">
+      <Kicker bullet="09" line="green" lane="L">Materiały</Kicker>
+      <h2 class="h2">Paczka danych i silniki awaryjne</h2>
+      <p class="lead">Wszystko leży w wydaniach repozytorium. Pobierz tylko swoje miasto i tabele GUS. Silniki i rozkłady są na wypadek, gdyby pobieranie we wtyczce nie zadziałało.</p>
+      <div class="downloads" data-reveal>
+        <div class="dl"><div><b>OSM przycięty do miasta</b><p><span class="path">osm/&lt;miasto&gt;.osm.pbf</span>, granica miasta z buforem 1 km. Dla GZM 41 gmin metropolii.</p></div><span class="size">2–73 MB</span></div>
+        <div class="dl"><div><b>Granica miasta</b><p><span class="path">granice/&lt;miasto&gt;_granica.gpkg</span>, EPSG:2180, z kodami TERYT gmin.</p></div><span class="size">&lt; 1 MB</span></div>
+        <div class="dl"><div><b>Obwody i rejony spisowe GUS</b><p><span class="path">gus/brec_2021_polska.gpkg</span>: warstwy <i>obwody_spisowe</i> i <i>rejony_statystyczne</i>, cała Polska.</p></div><span class="size">ok. 800 MB</span></div>
+        <div class="dl"><div><b>Tabele GUS NSP 2021</b><p><span class="path">gus/ludnosc_nsp_2021.xlsx</span>: ludność wg płci i grup wieku, arkusz na województwo. Obok cztery tabele o gospodarstwach i rodzinach.</p></div><span class="size">27–34 MB</span></div>
+        <div class="dl"><div><b>Rozkłady, awaryjnie</b><p><span class="path">gtfs/&lt;miasto&gt;/2026-08-26/</span> i <span class="path">2026-09-16/</span>, wariant planowy.</p></div><span class="size">do 50 MB</span></div>
+        <div class="dl"><div><b>Silniki, awaryjnie</b><p><span class="path">silniki/otp/</span>: Java 8 i OTP 1.5.0. <span class="path">silniki/r5/</span>: Java 21, R5 7.6 i skompilowany runner.</p></div><span class="size">156 / 392 MB</span></div>
+      </div>
+      <div class="btns">
+        <Btn href={RELEASES} variant="accent" icon="download" external>Pobierz z wydań</Btn>
+        <Btn href="https://github.com/GISBoost/easy-OTP" variant="secondary" icon="open_in_new" external>easy-OTP</Btn>
+        <Btn href="https://github.com/GISBoost/easy-R5" variant="secondary" icon="open_in_new" external>Easy-R5</Btn>
+      </div>
+      <div class="note" data-reveal>
+        <h3>Plan B na sali</h3>
+        <p>Pobieranie silnika nie działa: skopiuj folder z paczki i wskaż ścieżki w <i>Advanced</i>. Pobieranie rozkładu nie działa: weź plik z <span class="path">gtfs/</span>. Komputer za słaby na Warszawę albo GZM: mniejsze miasto albo siatka 1000 m.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 · STOPKA -->
+  <footer class="sec foot">
+    <div class="col">
+      <Kicker lane="R" terminus>Pętla</Kicker>
+      <div class="foot-cols">
+        <div><div class="kicker" style="margin-bottom:10px">Prowadzący</div>Michał Kaczorowski<br />GISBoost, Politechnika Łódzka<br /><a href="https://gisboost.github.io/" target="_blank" rel="noopener">gisboost.github.io</a></div>
+        <div><div class="kicker" style="margin-bottom:10px">Dane</div>© autorzy OpenStreetMap, ODbL<br />GUS: NSP 2021, BREC 2021<br />GTFS: przewoźnicy, przez gtfs-dashboard</div>
+        <div><div class="kicker" style="margin-bottom:10px">Narzędzia</div>QGIS · OpenTripPlanner 1.5<br />Conveyal R5 7.6<br />Wygląd: system Transit Index</div>
+      </div>
+      <div class="foot-bottom"><Logo size={28} credit /><span class="small muted">Wyniki z rozkładu to model, nie pomiar.</span></div>
+    </div>
+  </footer>
+</Base>

@@ -1,0 +1,16 @@
+---
+// Port of transit-index LineBullet: round route bullet in the line palette (decoration only).
+interface Props { label: string | number; line?: string; size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | number }
+const { label, line = 'vermilion', size = 'md' } = Astro.props;
+const SZ = { xs: 18, sm: 24, md: 36, lg: 56, xl: 96 } as const;
+const DARK = new Set(['yellow', 'orange', 'sky']);
+const d = typeof size === 'number' ? size : SZ[size];
+const len = String(label).length;
+const fs = Math.round(d * (len > 2 ? 0.4 : len > 1 ? 0.5 : 0.62));
+const bg = line === 'black' ? 'var(--line-black)' : `var(--line-${line})`;
+const fg = line === 'black' ? 'var(--paper)' : DARK.has(line) ? '#1E1D26' : '#fff';
+---
+<span class="bullet" style={`width:${d}px;height:${d}px;background:${bg};color:${fg};font-size:${fs}px`}>{label}</span>
+<style>
+  .bullet{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0;font:700 1em/1 var(--font-sans);letter-spacing:-0.02em;font-variant-numeric:tabular-nums}
+</style>
