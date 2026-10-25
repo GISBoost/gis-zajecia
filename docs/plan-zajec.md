@@ -25,8 +25,8 @@ Po zajęciach student:
   Łódź, Lublin, Poznań, Przemyśl, Radom, Rybnik, Rzeszów, Suwałki, Szczecin, Warszawa.
   Te same miasta są w module pobierania easy-R5 (indeks gtfs-dashboard).
   Duże sieci (Warszawa, GZM) liczą się najdłużej: siatka 1000 m zamiast 500 m.
-- **Dni:** środa **26.08.2026** (wakacje) i środa **16.09.2026** (rok szkolny), wersja rozkładowa
-  (`scheduled`). Oba dni są w indeksie dla wszystkich 15 miast.
+- **Dni:** środa **26.08.2026** (wakacje) i środa **16.09.2026** (rok szkolny), rozkład zrealizowany
+  P50 z nagrań GTFS-RT (P85 jako wariant dodatkowy). Oba dni są w indeksie dla wszystkich 15 miast.
 - **OSM:** przycięty do granic miasta (bufor 1 km), jeden plik `.osm.pbf` na miasto.
 - **Ludność:** GUS NSP 2021, obwody spisowe i rejony statystyczne na całą Polskę (BREC 2021)
   oraz tabele Excel GUS. Student sam wycina swoje miasto w QGIS, dalej łączą je algorytmy wtyczek.
@@ -34,22 +34,20 @@ Po zajęciach student:
 ### Paczka danych (Releases repozytorium)
 
 ```
-paczka/
-├── osm/<miasto>.osm.pbf              ← przycięty OSM, 15 plików
-├── granice/<miasto>_granica.gpkg     ← granica miasta (dla GZM: 41 gmin), EPSG:2180
-├── gtfs/<miasto>/2026-08-26/…_static_gtfs_….zip   ← awaryjnie, gdyby pobieranie nie ruszyło
-├── gtfs/<miasto>/2026-09-16/…_static_gtfs_….zip
-└── gus/
-    ├── brec_2021_polska.gpkg         ← warstwy: obwody_spisowe, rejony_statystyczne
-    ├── ludnosc_nsp_2021.xlsx         ← ludność wg płci i grup wieku, arkusz na województwo
-    └── (gospodarstwa, rodziny — 4 dodatkowe tabele NSP 2021)
+osm_miasta.7z     → osm/<miasto>.osm.pbf              ← przycięty OSM, 15 plików
+granice_miast.7z  → granice/<miasto>_granica.gpkg     ← granica miasta (dla GZM: 41 gmin), EPSG:2180
+gtfs_p50.7z       → gtfs_p50/<miasto>/<data>/<miasto>_realized_gtfs_<data>_p50.zip
+                                                       ← awaryjnie, 26.08 i 16.09, gdyby pobieranie nie ruszyło
+dane_gus.7z       → gus/brec_2021_polska.gpkg         ← warstwy: obwody_spisowe, rejony_statystyczne
+                    gus/ludnosc_nsp_2021.xlsx         ← ludność wg płci i grup wieku, arkusz na województwo
+                    gus/… (gospodarstwa, rodziny — 4 dodatkowe tabele NSP 2021)
 silniki/                              ← awaryjne silniki do skopiowania (pendrive / dysk)
 ├── otp/  (Temurin 8 JRE + otp-1.5.0-shaded.jar)
 └── r5/   (Temurin 21 JDK + r5-v7.6-all.jar + skompilowany runner)
 ```
 
-Pliki GTFS z gtfs-dashboard mają w nazwie `static_gtfs`, więc OTP 1.5 je rozpozna
-(OTP szuka „gtfs” w nazwie pliku). Ten sam plik GTFS idzie do obu wtyczek.
+Pliki P50 w paczce mają w nazwie `realized_gtfs`, więc OTP 1.5 je rozpozna (OTP szuka „gtfs”
+w nazwie pliku). Ten sam plik GTFS idzie do obu wtyczek. Silniki nie są w wydaniu, tylko na pendrivie.
 
 ## Przebieg (120 min)
 
@@ -75,7 +73,7 @@ wariant co 15 min przenosimy do zadania domowego. Ćwiczenia 2 nie skracamy — 
 1. *easy-OTP → Setup → Download Java 8 JRE and OpenTripPlanner Jar* (już pobrane na starcie).
    Awaryjnie: skopiuj `silniki/otp/` i wskaż ścieżki w *Advanced*.
 2. *Diagnostics → Test OTP server* — czy Java i jar są widoczne.
-3. Do jednego folderu: `paczka/osm/<miasto>.osm.pbf` i plik GTFS z 16.09.2026.
+3. Do jednego folderu: `osm/<miasto>.osm.pbf` i `<miasto>_realized_gtfs_2026-09-16_p50.zip` z paczki.
 4. *Analysis → Generate isochrones over time*: punkt (kliknięcie na mapie: dworzec lub uczelnia),
    TRANSIT, FROM, próg `30`, data 2026-09-16, okno 06:00–22:00, **interwał 60 min** → 17 izochron
    z polem `time` (QDateTime). Pierwszy przebieg buduje graf (najdłuższy krok).
@@ -106,19 +104,19 @@ P50 i P85 dla wszystkich 15 miast (manifest gtfs-dashboard, status `ok`, pokryci
    Potem drugi raz: **2026-09-16**, P50. Każdy dzień ląduje w osobnym folderze — tak ma być.
 2. *Diagnostics → Check transit data* dla obu folderów z ich datą. Zero błędów = można budować.
    (Pułapka do omówienia: data bez kursów daje po cichu same trasy piesze.)
-3. *Setup → Build R5 network* dwa razy: ten sam `paczka/osm/<miasto>.osm.pbf`, raz folder
+3. *Setup → Build R5 network* dwa razy: ten sam `osm/<miasto>.osm.pbf`, raz folder
    z 26.08, raz z 16.09.
 
 ### B. Siatka, cele, ludność (10 min, równolegle z budową sieci)
 
-4. Wczytaj `paczka/granice/<miasto>_granica.gpkg`.
+4. Wczytaj `granice/<miasto>_granica.gpkg`.
 5. Siatka: *Processing → Create grid* (heksagony, 500 m, EPSG:2180, zasięg = granica) →
    *Extract by location* (przecina granicę) → *Centroids*. W kalkulatorze pól dodaj `hex_id`
    (`@row_number`) — to identyfikator do łączenia.
 6. Szkoły: wczytaj `<miasto>.osm.pbf` w QGIS (warstwy *points* i *multipolygons*), filtr
    `"other_tags" LIKE '%"amenity"=>"school"%'`, z poligonów *Centroids*, scal obie warstwy.
 7. Ludność:
-   - z `paczka/gus/brec_2021_polska.gpkg` wybierz obwody swojego miasta
+   - z `gus/brec_2021_polska.gpkg` wybierz obwody swojego miasta
      (*Extract by location* z granicą miasta albo wyrażenie na polu `GMINA`);
    - *Easy-R5 → Prepare population layer*: `ludnosc_nsp_2021.xlsx`, arkusz = województwo,
      kolumna `10-19`, klucz `OBWOD`;
@@ -153,7 +151,7 @@ w analizie zmiany sieci w Łodzi z 5.10.
 ## Plan B na sali
 
 - Pobieranie silników nie działa → `silniki/` z pendrive’a, ścieżki w *Advanced*.
-- Pobieranie GTFS nie działa → `paczka/gtfs/<miasto>/<data>/`.
+- Pobieranie GTFS nie działa → `gtfs_p50.7z`, folder `<miasto>/<data>/`.
 - Komputer za słaby na Warszawę / GZM → mniejsze miasto albo siatka 1000 m.
 - Brak czasu na ludność → wynik w liczbie heksów, ludność w zadaniu domowym.
 

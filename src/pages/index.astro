@@ -216,11 +216,11 @@ const r5Algs: [string, string][] = [
     <div class="col">
       <Kicker bullet="05" line="vermilion" lane="L">Ćwiczenie 1 · 20 min</Kicker>
       <h2 class="h2">Jak zmienia się zasięg z jednego miejsca w ciągu dnia?</h2>
-      <p class="lead">Jedna izochrona z tego samego punktu co godzinę, od 6:00 do 22:00, a potem animacja w Temporal Controller. Potrzebne: plik OSM twojego miasta i rozkład z 16.09.2026 (z paczki albo pobrany w ćwiczeniu 2).</p>
+      <p class="lead">Jedna izochrona z tego samego punktu co godzinę, od 6:00 do 22:00, a potem animacja w Temporal Controller. Potrzebne: plik OSM twojego miasta i rozkład P50 z 16.09.2026 (z paczki <span class="path">gtfs_p50.7z</span> albo pobrany w ćwiczeniu 2).</p>
       <ol class="steps">
         <li data-reveal><b>Silnik OTP</b><p><i>easy-OTP → Setup → Download Java 8 JRE and OpenTripPlanner Jar</i>, folder np. <span class="path">C:\otp\</span>. Jeśli pobieranie nie działa: skopiuj folder <span class="path">otp/</span> z pendrive’a prowadzącego i wskaż ścieżki w <i>Advanced</i>.</p></li>
         <li data-reveal><b>Sprawdzenie</b><p><i>Diagnostics → Test OTP server</i>. Java i jar muszą być widoczne, zanim policzysz cokolwiek.</p></li>
-        <li data-reveal><b>Dane w jednym folderze</b><p><span class="path">&lt;miasto&gt;.osm.pbf</span> z paczki i plik <span class="path">…_static_gtfs_2026-09-16.zip</span> do osobnego folderu. Słowo „gtfs” w nazwie pliku jest potrzebne, żeby OTP rozpoznał rozkład.</p></li>
+        <li data-reveal><b>Dane w jednym folderze</b><p><span class="path">&lt;miasto&gt;.osm.pbf</span> z paczki i plik <span class="path">&lt;miasto&gt;_realized_gtfs_2026-09-16_p50.zip</span> do osobnego folderu. Słowo „gtfs” w nazwie pliku jest potrzebne, żeby OTP rozpoznał rozkład.</p></li>
         <li data-reveal><b>Izochrona co godzinę</b><p><i>Analysis → Generate isochrones over time</i>: punkt kliknięty na mapie (dworzec albo uczelnia), tryb TRANSIT, kierunek FROM, próg <code>30</code>, data 2026-09-16, okno 06:00–22:00, <b>interwał 60 min</b>. Wynik: 17 izochron, każda z polem <code>time</code>. Pierwszy przebieg buduje graf, to najdłuższy krok.</p></li>
         <li data-reveal><b>Ustawienia czasu warstwy</b><p><i>Właściwości warstwy → Czasowe</i>: zaznacz <i>Dynamiczne właściwości czasowe</i>, konfiguracja <i>Pojedyncze pole z datą/czasem</i>, pole <code>time</code>, czas trwania zdarzenia 60 minut.</p></li>
         <li data-reveal><b>Animacja</b><p><i>Widok → Panele → Temporal Controller</i>, tryb animacji, zakres z warstw, krok 1 godzina. Odtwórz.</p></li>
@@ -396,13 +396,12 @@ const r5Algs: [string, string][] = [
     <div class="col">
       <Kicker bullet="09" line="green" lane="L">Materiały</Kicker>
       <h2 class="h2">Paczka danych i silniki awaryjne</h2>
-      <p class="lead">Dane leżą w wydaniu repozytorium, każdy plik osobno. Pobierz tylko swoje miasto, granice i dane GUS. Rozkłady są na wypadek, gdyby pobieranie we wtyczce nie zadziałało.</p>
+      <p class="lead">Dane leżą w wydaniu repozytorium w czterech archiwach: OSM, granice, GUS i rozkłady. Rozkłady są na wypadek, gdyby pobieranie we wtyczce nie zadziałało.</p>
       <div class="downloads" data-reveal>
-        <div class="dl"><div><b>OSM przycięty do miasta</b><p><span class="path">&lt;miasto&gt;.osm.pbf</span>, granica miasta z buforem 1 km. Dla GZM 41 gmin metropolii.</p></div><span class="size">2–76 MB</span></div>
+        <div class="dl"><div><b>OSM przycięty do miast</b><p><span class="path">osm_miasta.7z</span>: 15 plików <span class="path">&lt;miasto&gt;.osm.pbf</span>, granica miasta z buforem 1 km. Dla GZM 41 gmin metropolii.</p></div><span class="size">301 MB</span></div>
         <div class="dl"><div><b>Granice miast</b><p><span class="path">granice_miast.7z</span>: 15 plików <span class="path">&lt;miasto&gt;_granica.gpkg</span>, EPSG:2180, z kodami TERYT gmin.</p></div><span class="size">&lt; 1 MB</span></div>
-        <div class="dl"><div><b>Obwody i rejony spisowe GUS</b><p><span class="path">brec_2021_polska.7z</span> z plikiem <span class="path">brec_2021_polska.gpkg</span>: warstwy <i>obwody_spisowe</i> i <i>rejony_statystyczne</i>, cała Polska (814 MB po rozpakowaniu).</p></div><span class="size">238 MB</span></div>
-        <div class="dl"><div><b>Tabele GUS NSP 2021</b><p><span class="path">ludnosc_nsp_2021.xlsx</span>: ludność wg płci i grup wieku, arkusz na województwo. Obok cztery tabele o gospodarstwach i rodzinach.</p></div><span class="size">27–34 MB</span></div>
-        <div class="dl"><div><b>Rozkłady, awaryjnie</b><p><span class="path">&lt;miasto&gt;_static_gtfs_2026-08-26.zip</span> i <span class="path">…_2026-09-16.zip</span>, wariant planowy. Rozkłady P50 i P85 pobierasz we wtyczce albo z gtfs-dashboard.</p></div><span class="size">do 50 MB</span></div>
+        <div class="dl"><div><b>Dane GUS</b><p><span class="path">dane_gus.7z</span>: <span class="path">brec_2021_polska.gpkg</span> (warstwy <i>obwody_spisowe</i> i <i>rejony_statystyczne</i>, cała Polska) i tabele NSP 2021, w tym <span class="path">ludnosc_nsp_2021.xlsx</span> (ludność wg płci i grup wieku, arkusz na województwo).</p></div><span class="size">345 MB</span></div>
+        <div class="dl"><div><b>Rozkłady zrealizowane P50</b><p><span class="path">gtfs_p50.7z</span>: <span class="path">&lt;miasto&gt;/2026-08-26/</span> i <span class="path">2026-09-16/</span>, mediana z nagrań GTFS-RT. Awaryjnie, gdyby pobieranie we wtyczce nie zadziałało; P85 jest w gtfs-dashboard.</p></div><span class="size">318 MB</span></div>
         <div class="dl"><div><b>Silniki, awaryjnie</b><p>Na sali, u prowadzącego: <span class="path">otp/</span> (Java 8 i OTP 1.5.0) i <span class="path">r5/</span> (Java 21, R5 7.6 i skompilowany runner).</p></div><span class="size">pendrive</span></div>
       </div>
       <div class="btns">
@@ -412,7 +411,7 @@ const r5Algs: [string, string][] = [
       </div>
       <div class="note" data-reveal>
         <h3>Plan B na sali</h3>
-        <p>Pobieranie silnika nie działa: skopiuj folder z pendrive’a i wskaż ścieżki w <i>Advanced</i>. Pobieranie rozkładu nie działa: weź plik <span class="path">…_static_gtfs_….zip</span> z wydania. Komputer za słaby na Warszawę albo GZM: mniejsze miasto albo siatka 1000 m.</p>
+        <p>Pobieranie silnika nie działa: skopiuj folder z pendrive’a i wskaż ścieżki w <i>Advanced</i>. Pobieranie rozkładu nie działa: weź swoje miasto z <span class="path">gtfs_p50.7z</span>. Komputer za słaby na Warszawę albo GZM: mniejsze miasto albo siatka 1000 m.</p>
       </div>
     </div>
   </section>
