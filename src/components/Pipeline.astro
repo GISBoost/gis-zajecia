@@ -1,13 +1,15 @@
 ---
 // A pipeline drawn as a transit line: the page's 5-line bundle runs through one station per
-// step and ends at an ink terminus. Horizontal on desktop, vertical on narrow screens.
+// step and ends at an ink terminus. Horizontal on desktop, vertical on narrow screens. The block
+// rises in like other [data-reveal] blocks and the bundle draws on from the first station ([data-bar]).
 interface Step { name: string; data: string; text: string }
 interface Props { steps: Step[]; end: Step }
 const { steps, end } = Astro.props;
 ---
-<ol class="pipe" style={`--n:${steps.length + 1}`}>
+<ol class="pipe" style={`--n:${steps.length + 1}`} data-reveal>
+  <li class="bar" data-bar aria-hidden="true"></li>
   {[...steps, end].map((s, i) => (
-    <li class:list={['stop', { end: i === steps.length }]} data-reveal>
+    <li class:list={['stop', { end: i === steps.length }]}>
       <span class="node" aria-hidden="true"></span>
       <span class="data">{s.data}</span>
       <b>{s.name}</b>
@@ -18,7 +20,7 @@ const { steps, end } = Astro.props;
 <style>
   .pipe{--lw:6px;--lg:3px;--bw:calc(5 * var(--lw) + 4 * var(--lg));list-style:none;margin:32px 0 0;padding:0;position:relative;display:grid;grid-template-columns:repeat(var(--n),1fr);gap:0 18px}
   /* The bundle: five coloured lines with paper gaps, from the first node to the terminus. */
-  .pipe::before{content:'';position:absolute;top:18px;left:calc(100% / var(--n) / 2);right:calc(100% / var(--n) / 2);height:var(--bw);transform:translateY(-50%);
+  .bar{position:absolute;transform-origin:left top;top:calc(18px - var(--bw) / 2);left:calc(100% / var(--n) / 2);right:calc(100% / var(--n) / 2);height:var(--bw);
     background:linear-gradient(to bottom,
       var(--line-vermilion) 0 var(--lw),transparent 0 calc(var(--lw) + var(--lg)),
       var(--line-orange) 0 calc(2 * var(--lw) + var(--lg)),transparent 0 calc(2 * var(--lw) + 2 * var(--lg)),
@@ -35,7 +37,7 @@ const { steps, end } = Astro.props;
   p{margin:0;font-size:14px;line-height:1.45}
   @media (max-width:860px){
     .pipe{grid-template-columns:1fr;gap:22px}
-    .pipe::before{top:18px;bottom:18px;left:24px;right:auto;width:var(--bw);height:auto;transform:translateX(-50%);
+    .bar{top:18px;bottom:18px;left:calc(24px - var(--bw) / 2);right:auto;width:var(--bw);height:auto;
       background:linear-gradient(to right,
         var(--line-vermilion) 0 var(--lw),transparent 0 calc(var(--lw) + var(--lg)),
         var(--line-orange) 0 calc(2 * var(--lw) + var(--lg)),transparent 0 calc(2 * var(--lw) + 2 * var(--lg)),

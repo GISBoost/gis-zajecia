@@ -254,6 +254,8 @@ if (!reduced()) {
     gsap.from(el, { y: 28, opacity: 0, duration: 0.7, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 85%', once: true } });
   });
   gsap.utils.toArray<HTMLElement>('[data-bar]').forEach((el) => {
-    gsap.fromTo(el, { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 85%', once: true } });
+    // Bars draw on along their long axis: horizontal ones from the left, vertical ones from the top.
+    const k = el.offsetHeight > el.offsetWidth ? 'scaleY' : 'scaleX';
+    gsap.fromTo(el, { [k]: 0 }, { [k]: 1, duration: 0.9, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 85%', once: true } });
   });
 }
