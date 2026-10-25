@@ -53,8 +53,9 @@ function build() {
   let g = 4;
   let bw = 5 * w + 4 * g;
   const cs = cr + 56 + bw / 2;
-  const ce = W - 40 - bw / 2;
-  const mobile = ce - cs < 200;
+  const ce = Math.max(cs, W - 40 - bw / 2);
+  // Same breakpoint as the CSS layout; a narrow desktop corridor still keeps two lanes.
+  const mobile = W <= 860;
   if (mobile) {
     w = 4;
     g = 2;
@@ -71,6 +72,11 @@ function build() {
       term: e.hasAttribute('data-terminus'),
     };
   });
+  // A lane switch needs a 45° run of |dx| plus room for the bends. When two stations are too
+  // close vertically, keep the previous lane instead of overshooting and looping back up.
+  for (let k = 1; k < st.length; k++) {
+    if (Math.abs(st[k].x - st[k - 1].x) + 2 * r > st[k].y - st[k - 1].y) st[k].x = st[k - 1].x;
+  }
   if (st.length < 2) return;
 
   const root = mk('g', {}, svg);

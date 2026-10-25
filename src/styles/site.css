@@ -23,15 +23,16 @@ main{position:relative;z-index:1}
 .theme:hover{background:var(--paper-2)}
 :focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
 
-.col{margin-left:max(24px,6vw);width:min(56vw,760px);position:relative}
+/* Content column is centred in the space left of a ~320px corridor for the line bundle. */
+.col{--corridor:320px;width:min(calc(100vw - 48px - var(--corridor)),1180px);margin-left:max(24px,calc((100vw - var(--corridor) - 1180px) / 2));position:relative}
 .sec{position:relative;padding:130px 0}
 .hero{padding-top:110px}
 .kicker{font:700 13px/1 var(--font-condensed);letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;gap:10px}
 .h1{font:700 clamp(44px,6.6vw,104px)/.92 var(--font-sans);letter-spacing:-0.04em;margin:22px 0 0;text-wrap:balance}
-.h2{font:700 clamp(32px,4.2vw,58px)/1 var(--font-sans);letter-spacing:-0.035em;margin:22px 0 0;text-wrap:balance;max-width:720px}
+.h2{font:700 clamp(32px,4.2vw,58px)/1 var(--font-sans);letter-spacing:-0.035em;margin:22px 0 0;text-wrap:balance;max-width:900px}
 .h3{font:700 22px/1.15 var(--font-sans);letter-spacing:-0.02em;margin:48px 0 0}
-.lead{font-size:clamp(17px,1.35vw,20px);line-height:1.45;max-width:600px;margin:20px 0 0;text-wrap:pretty}
-.small{font-size:15px;line-height:1.5;max-width:600px;margin:14px 0 0;text-wrap:pretty}
+.lead{font-size:clamp(17px,1.35vw,20px);line-height:1.45;max-width:780px;margin:20px 0 0;text-wrap:pretty}
+.small{font-size:16px;line-height:1.55;max-width:780px;margin:14px 0 0;text-wrap:pretty}
 .muted{color:var(--ink-3)}
 p{text-wrap:pretty}
 
@@ -41,7 +42,7 @@ p{text-wrap:pretty}
 .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:32px}
 
 /* grids of numbered items (Limits section pattern) */
-.items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 32px;margin-top:32px}
+.items{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:24px 32px;margin-top:32px}
 .item{border-top:2px solid var(--ink);padding-top:14px;display:flex;gap:12px}
 .item b{font-size:18px;letter-spacing:-0.01em}
 .item p{margin:6px 0 0;font-size:15px;line-height:1.5}
@@ -66,7 +67,7 @@ p{text-wrap:pretty}
 .tbl .alg{font-family:var(--font-condensed);font-size:15px}
 
 /* exercise steps */
-.steps{counter-reset:step;list-style:none;padding:0;margin:24px 0 0}
+.steps{counter-reset:step;list-style:none;padding:0;margin:24px 0 0;max-width:900px}
 .steps > li{counter-increment:step;position:relative;padding:14px 0 14px 52px;border-top:2px solid var(--ink)}
 .steps > li::before{content:counter(step);position:absolute;left:0;top:12px;width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--paper);display:flex;align-items:center;justify-content:center;font:700 16px/1 var(--font-sans);font-variant-numeric:tabular-nums}
 .steps > li b{font-size:17px}
@@ -78,7 +79,7 @@ code{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-size:.88em
 .phase{display:flex;align-items:center;gap:12px;margin:44px 0 0}
 .phase h3{font:700 22px/1.15 var(--font-sans);letter-spacing:-0.02em;margin:0}
 
-.note{margin-top:28px;border:2px solid var(--ink);border-top:8px solid var(--ink);padding:18px 20px;background:var(--white)}
+.note{max-width:900px;margin-top:28px;border:2px solid var(--ink);border-top:8px solid var(--ink);padding:18px 20px;background:var(--white)}
 .note h3{margin:0;font:700 18px/1.2 var(--font-sans)}
 .note p{margin:8px 0 0;font-size:15px;line-height:1.5}
 

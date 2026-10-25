@@ -5,7 +5,7 @@ interface Stop { name: string; time?: string; big?: boolean }
 interface Props { stops: Stop[]; line?: string; thickness?: number }
 const { stops, line = 'vermilion', thickness = 10 } = Astro.props;
 const n = stops.length;
-const LH = 120;
+const LH = 150;
 const DOT = 28;
 ---
 <div class="scroll" data-reveal>
@@ -21,7 +21,7 @@ const DOT = 28;
   </div>
 </div>
 <style>
-  .scroll{overflow-x:auto;margin-top:28px}
+  .scroll{overflow-x:auto;margin-top:28px;padding-right:110px}
   .strip{position:relative;display:grid;min-width:640px;font-family:var(--font-condensed);color:var(--ink)}
   .bar{position:absolute;transform-origin:left center}
   .stop{position:relative;display:flex;flex-direction:column;align-items:center;min-width:0}
