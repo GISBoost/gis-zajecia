@@ -70,6 +70,7 @@ function build() {
       y: Math.round(b.top + window.scrollY + b.height / 2),
       x: lanes[e.dataset.lane || 'R'],
       term: e.hasAttribute('data-terminus'),
+      label: (e.textContent || '').trim(),
     };
   });
   // A lane switch needs a 45° run of |dx| plus room for the bends. When two stations are too
@@ -146,6 +147,15 @@ function build() {
     const rc = mk('rect', { x: p.x - bw / 2 - 9, y: p.y - hh / 2, width: bw + 18, height: hh, rx: hh / 2, 'stroke-width': mobile ? 2 : 3 }, nodes);
     rc.style.fill = p.term ? 'var(--ink)' : 'var(--paper)';
     rc.style.stroke = 'var(--ink)';
+    // The terminus is named on the line itself, beside its node (left on desktop, right on mobile).
+    if (p.term && p.label) {
+      const t = mk('text', { y: p.y, 'dominant-baseline': 'central', 'font-size': 15, 'font-weight': 700, 'letter-spacing': 1.2 }, nodes);
+      t.textContent = p.label.toUpperCase();
+      t.style.fontFamily = 'var(--font-condensed)';
+      t.style.fill = 'var(--ink)';
+      const gap = bw / 2 + 9 + 14;
+      t.setAttribute('x', String(mobile ? p.x + gap : p.x - gap - t.getComputedTextLength()));
+    }
   });
   const head = mk('g', { opacity: 0 }, nodes);
   const hc = mk('circle', { r: w * 1.15 }, head);
@@ -209,11 +219,18 @@ function build() {
   });
 }
 
+let built = '';
 export function schedule() {
   clearTimeout(timer);
   timer = window.setTimeout(() => {
+    // Rebuild only when the layout really changed; a rebuild mid-scroll redraws every segment.
+    const key = `${document.documentElement.clientWidth}x${document.documentElement.scrollHeight}:${reduced()}`;
+    if (key === built) return;
+    built = key;
     build();
     ScrollTrigger.refresh();
+    // Jump straight to the current scroll position instead of scrubbing up from zero.
+    triggers.forEach((t) => t.animation?.progress(t.progress));
   }, 160);
 }
 

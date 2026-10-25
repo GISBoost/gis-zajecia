@@ -140,5 +140,5 @@ dialog.zoom[open]::backdrop{animation:fade-in .22s ease-out}
 @keyframes zoom-in{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:none}}
 @keyframes fade-in{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){dialog.zoom[open],dialog.zoom[open]::backdrop{animation:none}}
-/* The terminus label reads as a stop sign, so it is not lost in the footer. */
-.kicker[data-terminus] span{background:var(--ink);color:var(--paper);padding:8px 14px;font-size:16px;border-radius:999px}
+/* The terminus kicker only anchors the last station; journey.ts draws its name beside the node. */
+.kicker[data-terminus] span{visibility:hidden}

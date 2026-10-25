@@ -1,13 +1,15 @@
 ---
 // Flat image or video framed with a 2px ink border (design rule: imagery stays flat).
-interface Props { src: string; alt: string; caption?: string; video?: boolean }
-const { src, alt, caption, video = false } = Astro.props;
+import { mediaSize } from '../lib/media-size';
+interface Props { src: string; alt: string; caption?: string; video?: boolean; small?: boolean }
+const { src, alt, caption, video = false, small = false } = Astro.props;
 const url = import.meta.env.BASE_URL + src;
+const size = mediaSize(src);
 ---
-<figure class="fig" data-reveal>
+<figure class:list={['fig', { small }]} data-reveal>
   {video
-    ? <video src={url} aria-label={alt} controls muted loop playsinline preload="metadata"></video>
-    : <img src={url} alt={alt} loading="lazy" decoding="async" />}
+    ? <video src={url} aria-label={alt} controls muted loop playsinline preload="metadata" {...size}></video>
+    : <img src={url} alt={alt} loading="lazy" decoding="async" {...size} />}
   {caption && <figcaption>{caption}</figcaption>}
 </figure>
 <style>
@@ -15,5 +17,6 @@ const url = import.meta.env.BASE_URL + src;
   .fig{width:fit-content;max-width:100%;margin:28px auto 0;border:var(--border-w) solid var(--ink);background:var(--white)}
   /* Tall or square images are capped so the whole figure fits on screen without scrolling. */
   img,video{display:block;width:auto;max-width:100%;height:auto;max-height:min(68vh,720px);margin:0 auto}
+  .small img,.small video{max-width:min(100%,590px)}
   figcaption{width:0;min-width:100%;box-sizing:border-box;border-top:var(--border-w) solid var(--ink);padding:10px 14px;font:400 14px/1.4 var(--font-condensed);background:var(--paper-2)}
 </style>

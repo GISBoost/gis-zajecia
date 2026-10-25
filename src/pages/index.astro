@@ -4,6 +4,7 @@ import Kicker from '../components/Kicker.astro';
 import Stat from '../components/Stat.astro';
 import Btn from '../components/Btn.astro';
 import Figure from '../components/Figure.astro';
+import Pipeline from '../components/Pipeline.astro';
 import RouteStrip from '../components/RouteStrip.astro';
 import LineBullet from '../components/LineBullet.astro';
 import Logo from '../components/Logo.astro';
@@ -386,14 +387,14 @@ const r5Algs: [string, string][] = [
 
       <div class="phase"><LineBullet label="1" line="violet" size="md" /><h3>easy-GTFS-RT: nagrywanie i rekonstrukcja</h3></div>
       <p class="small">Repozytorium bez kodu aplikacji, same workflowy GitHub Actions. Codziennie dla każdego miasta:</p>
-      <ol class="steps">
-        <li data-reveal><b>Nagrywanie</b><p>Raz na minutę zapis feedu <code>VehiclePositions</code>: pojazd V jest w punkcie X i realizuje kurs K. Większość polskich miast nie publikuje gotowych opóźnień, więc opóźnienie trzeba wywnioskować.</p></li>
-        <li data-reveal><b>Dopasowanie</b><p>Każdą pozycję rzutujemy na trasę kursu i ustalamy, między którymi przystankami był pojazd.</p></li>
-        <li data-reveal><b>Interpolacja</b><p>Z dwóch kolejnych pozycji wyliczamy, kiedy pojazd minął przystanek.</p></li>
-        <li data-reveal><b>Agregacja</b><p>Wszystkie przejazdy danego odcinka łączymy w statystyki: mediana (P50) i 85. percentyl (P85) czasu przejazdu.</p></li>
-        <li data-reveal><b>Przebudowa rozkładu</b><p>W oficjalnym GTFS podmieniamy czasy na zmierzone. Wynik to zwykły plik GTFS, więc otworzy go i OTP, i R5. Odcinki, których nikt nie nagrał, zostają z rozkładu.</p></li>
-      </ol>
-      <Figure src="img/rt-wydanie-github.jpg" alt="Strona wydania easy-GTFS-RT dla Łodzi z 16.09.2026 z listą plików" caption="Wydanie dla Łodzi z 16.09.2026: GTFS P50 i P85, rozkład planowy do porównania, wykres i tabela różnic." />
+      <Pipeline steps={[
+        { data: 'pozycja co 60 s', name: 'Nagrywanie', text: 'Zapis feedu VehiclePositions: pojazd V jest w punkcie X i jedzie kursem K. Większość miast nie publikuje opóźnień, więc trzeba je wywnioskować.' },
+        { data: 'punkt na trasie', name: 'Dopasowanie', text: 'Każdą pozycję rzutujemy na trasę kursu: między którymi przystankami był pojazd.' },
+        { data: 'godzina minięcia', name: 'Interpolacja', text: 'Z dwóch kolejnych pozycji wyliczamy, kiedy pojazd minął przystanek.' },
+        { data: 'czas odcinka', name: 'Agregacja', text: 'Przejazdy tego samego odcinka z tej samej pory dnia łączymy: mediana (P50) i 85. percentyl (P85).' },
+        { data: 'stop_times.txt', name: 'Przebudowa', text: 'W oficjalnym GTFS podmieniamy czasy na zmierzone. Odcinki, których nikt nie nagrał, zostają z rozkładu.' },
+      ]} end={{ data: 'GTFS P50 i P85', name: 'Wydanie', text: 'Zwykły plik GTFS na każdy dzień: otworzy go easy-OTP, Easy-R5 i gtfs-dashboard.' }} />
+      <Figure small src="img/rt-wydanie-github.jpg" alt="Strona wydania easy-GTFS-RT dla Łodzi z 16.09.2026 z listą plików" caption="Wydanie dla Łodzi z 16.09.2026: GTFS P50 i P85, rozkład planowy do porównania, wykres i tabela różnic." />
       <div class="btns">
         <Btn href="https://github.com/GISBoost/easy-GTFS-RT" variant="secondary" icon="open_in_new" external>easy-GTFS-RT</Btn>
         <Btn href="https://github.com/GISBoost/easy-GTFS-RT/blob/main/HOW-IT-WORKS.pl.md" variant="ghost" icon="open_in_new" external>Jak to działa (opis metody)</Btn>
