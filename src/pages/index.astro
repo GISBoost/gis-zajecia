@@ -75,7 +75,7 @@ const r5Algs: [string, string][] = [
       <div class="items">
         <div class="item" data-reveal><LineBullet label="1" line="black" size="sm" /><div><b>Wybierz miasto</b><p>Jedno z 15 miast z <a href="https://gisboost.github.io/gtfs-dashboard/" target="_blank" rel="noopener">indeksu nagrań GTFS</a>. Duże sieci (Warszawa, GZM) liczą się najdłużej.</p></div></div>
         <div class="item" data-reveal><LineBullet label="2" line="black" size="sm" /><div><b>Zainstaluj wtyczki</b><p><i>Wtyczki → Zarządzaj wtyczkami</i>, wyszukaj <a href="https://github.com/GISBoost/easy-OTP" target="_blank" rel="noopener">easy-OTP</a> i <a href="https://github.com/GISBoost/easy-R5" target="_blank" rel="noopener">Easy-R5</a>. Obie są w repozytorium wtyczek QGIS.</p></div></div>
-        <div class="item" data-reveal><LineBullet label="3" line="black" size="sm" /><div><b>Pobierz dane</b><p>OSM i granicę swojego miasta oraz obwody GUS z <a href="#materialy">paczki danych</a>. Archiwa .7z otworzysz <a href="https://www.7-zip.org/" target="_blank" rel="noopener">7-Zipem</a>.</p></div></div>
+        <div class="item" data-reveal><LineBullet label="3" line="black" size="sm" /><div><b>Pobierz dane</b><p>Cztery archiwa z <a href="#materialy">paczki danych</a>: OSM, granice, GUS i rozkłady P50 (rozkład z 16.09 jest potrzebny już w ćwiczeniu 1). Archiwa .7z otworzysz <a href="https://www.7-zip.org/" target="_blank" rel="noopener">7-Zipem</a>.</p></div></div>
         <div class="item" data-reveal><LineBullet label="4" line="black" size="sm" /><div><b>Uruchom pobieranie silników</b><p><i>easy-OTP → Setup</i> i <i>Easy-R5 → Setup</i>. Gdyby nie ruszyło, silniki awaryjne ma prowadzący na pendrivie.</p></div></div>
       </div>
       <div class="cities" data-reveal>{cities.map((c) => <span class="city">{c}</span>)}</div>
@@ -216,15 +216,28 @@ const r5Algs: [string, string][] = [
     <div class="col">
       <Kicker bullet="05" line="vermilion" lane="L">Ćwiczenie 1 · 20 min</Kicker>
       <h2 class="h2">Jak zmienia się zasięg z jednego miejsca w ciągu dnia?</h2>
-      <p class="lead">Jedna izochrona z tego samego punktu co godzinę, od 6:00 do 22:00, a potem animacja w Temporal Controller. Potrzebne: plik OSM twojego miasta i rozkład P50 z 16.09.2026 (z paczki <span class="path">gtfs_p50.7z</span> albo pobrany w ćwiczeniu 2).</p>
+      <p class="lead">Jedna izochrona z tego samego punktu co godzinę, od 6:00 do 22:00, a potem animacja w QGIS. Potrzebne: plik OSM twojego miasta i rozkład P50 z 16.09.2026 z paczki <span class="path">gtfs_p50.7z</span>.</p>
+      <div class="note" data-reveal>
+        <h3>Nazwy algorytmów w polskim QGIS</h3>
+        <p>Instrukcja podaje nazwę angielską i polską. Najprościej wpisać którąś z nich w wyszukiwarkę <i>Przybornika Processing</i> (Processing Toolbox): znajduje algorytm po obu.</p>
+      </div>
       <ol class="steps">
-        <li data-reveal><b>Silnik OTP</b><p><i>easy-OTP → Setup → Download Java 8 JRE and OpenTripPlanner Jar</i>, folder np. <span class="path">C:\otp\</span>. Jeśli pobieranie nie działa: skopiuj folder <span class="path">otp/</span> z pendrive’a prowadzącego i wskaż ścieżki w <i>Advanced</i>.</p></li>
-        <li data-reveal><b>Sprawdzenie</b><p><i>Diagnostics → Test OTP server</i>. Java i jar muszą być widoczne, zanim policzysz cokolwiek.</p></li>
-        <li data-reveal><b>Dane w jednym folderze</b><p><span class="path">&lt;miasto&gt;.osm.pbf</span> z paczki i plik <span class="path">&lt;miasto&gt;_realized_gtfs_2026-09-16_p50.zip</span> do osobnego folderu. Słowo „gtfs” w nazwie pliku jest potrzebne, żeby OTP rozpoznał rozkład.</p></li>
-        <li data-reveal><b>Izochrona co godzinę</b><p><i>Analysis → Generate isochrones over time</i>: punkt kliknięty na mapie (dworzec albo uczelnia), tryb TRANSIT, kierunek FROM, próg <code>30</code>, data 2026-09-16, okno 06:00–22:00, <b>interwał 60 min</b>. Wynik: 17 izochron, każda z polem <code>time</code>. Pierwszy przebieg buduje graf, to najdłuższy krok.</p></li>
-        <li data-reveal><b>Ustawienia czasu warstwy</b><p><i>Właściwości warstwy → Czasowe</i>: zaznacz <i>Dynamiczne właściwości czasowe</i>, konfiguracja <i>Pojedyncze pole z datą/czasem</i>, pole <code>time</code>, czas trwania zdarzenia 60 minut.</p></li>
-        <li data-reveal><b>Animacja</b><p><i>Widok → Panele → Temporal Controller</i>, tryb animacji, zakres z warstw, krok 1 godzina. Odtwórz.</p></li>
-        <li data-reveal><b>Dla chętnych</b><p>Ten sam punkt z interwałem 15 min albo drugi próg (<code>15,30</code>). Liczba zapytań rośnie z każdym progiem i każdym krokiem czasu.</p></li>
+        <li data-reveal><b>Silnik OTP</b><p><i>easy-OTP → Setup → Download Java 8 JRE and OpenTripPlanner Jar</i> (PL: <i>1 · Konfiguracja → Pobierz Java 8 JRE i plik Jar OpenTripPlanner</i>), folder np. <span class="path">C:\otp\</span>. Wtyczka zapamięta ścieżki do Javy i jara. Jeśli pobieranie nie działa: skopiuj folder <span class="path">otp/</span> z pendrive’a prowadzącego.</p></li>
+        <li data-reveal><b>Sprawdzenie</b><p><i>Diagnostics → Test OTP server</i> (PL: <i>2 · Diagnostyka → Test serwera OTP</i>). Wynik „Wszystkie testy zaliczone” znaczy, że Java i jar są gotowe.</p></li>
+        <li data-reveal><b>Dane</b><p>Z paczek wypakuj <span class="path">&lt;miasto&gt;.osm.pbf</span> i <span class="path">&lt;miasto&gt;_realized_gtfs_2026-09-16_p50.zip</span>. Plik rozkładu skopiuj do osobnego folderu, w którym nie ma innych plików .zip: ten folder wskażesz jako <i>Folder GTFS</i>.</p></li>
+        <li data-reveal><b>Podkład mapy</b><p><i>Przeglądarka → XYZ Tiles → OpenStreetMap</i> (przeciągnij na mapę). Bez podkładu trudno trafić w dworzec albo uczelnię.</p></li>
+        <li data-reveal><b>Izochrona co godzinę</b><p><i>Analysis → Generate isochrones over time</i> (PL: <i>3 · Analiza → Generuj izochrony w czasie</i>):</p>
+          <ul>
+            <li>punkt: przycisk „…” obok pola i klik na mapie (dworzec albo uczelnia);</li>
+            <li>plik OSM, <i>Folder GTFS</i> z poprzedniego kroku;</li>
+            <li>tryb TRANSIT, kierunek FROM, próg <code>30</code>;</li>
+            <li>okno 06:00–22:00, <b>interwał 60</b> (domyślnie jest 15), data <b>2026-09-16</b> (domyślnie jest dzisiejsza);</li>
+            <li><i>Katalog roboczy</i>: nowy pusty folder, np. <span class="path">C:\otp\praca</span>.</li>
+          </ul>
+          <p>Wynik: 17 izochron, każda z polem <code>time</code>. Pierwszy przebieg buduje graf, to najdłuższy krok (ok. 1–2 min dla Łodzi).</p></li>
+        <li data-reveal><b>Ustawienia czasu warstwy</b><p><i>Właściwości warstwy → Czas</i>: zaznacz <i>Dynamiczna kontrola czasu</i>, Tryb: <i>pojedyncze pole z datą/godziną</i>, pole <code>time</code>, czas trwania zdarzenia 60 minut. Wtyczka nie ustawia tego sama.</p></li>
+        <li data-reveal><b>Animacja</b><p><i>Widok → Panele → Sterowanie czasem</i> (Temporal Controller): kliknij ikonę animacji, potem <i>Ustaw na pełny zakres</i>, krok 1 godzina i ▶. W każdej klatce widać jedną izochronę.</p></li>
+        <li data-reveal><b>Dla chętnych</b><p>Ten sam punkt z interwałem 15 min albo z progami <code>15,30</code>. Użyj tego samego <i>Katalogu roboczego</i>: graf jest już zbudowany, więc liczy się szybko. Liczba zapytań rośnie z każdym progiem i każdym krokiem czasu.</p></li>
       </ol>
       <Figure src="img/izochrony-otp.jpg" alt="Izochrony wygenerowane w easy-OTP" caption="Uwaga: ten obrazek pokazuje działanie innego algorytmu (Generate isochrones: kilka progów w jednym momencie). W ćwiczeniu dostajesz jedną izochronę 30 min na każdą godzinę." />
       <div class="note" data-reveal><h3>Do dyskusji</h3><p>O której zasięg jest największy, a o której najmniejszy? Gdzie rośnie skokowo wzdłuż kolei i tramwaju? Dlaczego wieczorem kurczy się bardziej na peryferiach niż w centrum?</p></div>
@@ -282,33 +295,68 @@ const r5Algs: [string, string][] = [
 
       <div class="phase"><LineBullet label="A" line="blue" size="md" /><h3>Dane · 10 min</h3></div>
       <ol class="steps">
-        <li data-reveal><b>Silnik R5</b><p><i>Easy-R5 → Setup → Download R5 engine and Java 21</i>. Awaryjnie: folder <span class="path">r5/</span> z pendrive’a prowadzącego.</p></li>
-        <li data-reveal><b>Dwa dni z nagrań</b><p><i>Wtyczki → Easy-R5 → Download transit recordings…</i>: twoje miasto, dzień <b>2026-08-26</b>, wariant <b>P50</b>. Potem drugi raz: <b>2026-09-16</b>, P50. Każdy dzień trafia do osobnego folderu i tak ma zostać.</p></li>
-        <li data-reveal><b>Kontrola danych</b><p><i>Diagnostics → Check transit data</i> dla obu folderów, każdy z jego datą. Zero błędów oznacza, że można budować. Data bez kursów daje po cichu same trasy piesze, dlatego ten krok jest obowiązkowy.</p></li>
-        <li data-reveal><b>Dwie sieci</b><p><i>Setup → Build R5 network</i> dwa razy: ten sam <span class="path">&lt;miasto&gt;.osm.pbf</span>, raz folder z 26.08, raz z 16.09.</p></li>
+        <li data-reveal><b>Silnik R5</b><p><i>Easy-R5 → Setup → Download R5 engine and Java 21</i> (PL: <i>Konfiguracja → Pobierz silnik R5 i Javę 21</i>). Awaryjnie: folder <span class="path">r5/</span> z pendrive’a prowadzącego.</p></li>
+        <li data-reveal><b>Dwa dni z nagrań</b><p><i>Wtyczki → Easy-R5 → Download transit recordings…</i>:</p>
+          <ul>
+            <li><i>City</i>: twoje miasto (Łódź jest na końcu listy, nie myl jej z Łódzką Koleją Aglomeracyjną);</li>
+            <li>najpierw <i>Month</i> <b>2026-08</b>, potem <i>Day</i> <b>2026-08-26</b>;</li>
+            <li><i>Variant</i>: <b>Realized — median (P50)</b>;</li>
+            <li><i>Download into</i>: np. <span class="path">C:\r5\nagrania</span>.</li>
+          </ul>
+          <p>Potem drugi raz: Month 2026-09, Day <b>2026-09-16</b>, P50. Każdy dzień trafia do osobnego folderu (<span class="path">…\&lt;miasto&gt;\&lt;data&gt;\p50\</span>) i tak ma zostać.</p></li>
+        <li data-reveal><b>Kontrola danych</b><p><i>Diagnostics → Check transit data (GTFS)</i>: wskaż plik .zip z folderu danego dnia i wpisz tę samą datę (<code>2026-08-26</code>, potem <code>2026-09-16</code>). Zero błędów oznacza, że można budować; ostrzeżenia są w porządku.</p></li>
+        <li data-reveal><b>Dwie sieci</b><p><i>Build R5 network</i> (PL: <i>Konfiguracja → Zbuduj sieć R5</i>) dwa razy: ten sam <span class="path">&lt;miasto&gt;.osm.pbf</span>, raz folder z 26.08, raz z 16.09. Pole z folderem GTFS podpowiada ostatnio pobrany dzień, więc przy 26.08 zmień je ręcznie. <b>Po każdej budowie zapisz ścieżkę do <span class="path">network.dat</span> z okna wyników</b>: folder ma losową nazwę, a w analizie musisz wskazać właściwą sieć.</p></li>
       </ol>
+      <div class="note" data-reveal>
+        <h3>Pilnuj daty</h3>
+        <p>Plik zrealizowany ma w kalendarzu kursy także w innych dniach, więc pomyłki daty nie wykryje ani kontrola danych, ani R5. W każdym kroku data ma się zgadzać z folderem, z którego jest sieć.</p>
+      </div>
 
       <div class="phase"><LineBullet label="B" line="blue" size="md" /><h3>Siatka, szkoły, ludność · 10 min</h3></div>
       <ol class="steps">
-        <li data-reveal><b>Siatka heksagonalna</b><p>Wczytaj <span class="path">&lt;miasto&gt;_granica.gpkg</span>. <i>Processing → Create grid</i>: heksagony, 500 m, EPSG:2180, zasięg z granicy. Potem <i>Extract by location</i> (przecina granicę) i <i>Centroids</i>. W kalkulatorze pól dodaj <code>hex_id</code> = <code>@row_number</code>.</p></li>
-        <li data-reveal><b>Szkoły z OSM</b><p>Przeciągnij <span class="path">&lt;miasto&gt;.osm.pbf</span> do QGIS (warstwy <i>points</i> i <i>multipolygons</i>). Filtr: <code>"other_tags" LIKE '%"amenity"=&gt;"school"%'</code>. Z poligonów zrób <i>Centroids</i> i scal obie warstwy (<i>Merge vector layers</i>).</p></li>
+        <li data-reveal><b>Siatka heksagonalna</b>
+          <ul>
+            <li>wczytaj <span class="path">&lt;miasto&gt;_granica.gpkg</span>;</li>
+            <li><i>Create grid</i> (PL: <i>Utwórz siatkę</i>): heksagony, odstęp 500 m, EPSG:2180, zasięg z granicy;</li>
+            <li><i>Extract by location</i> (PL: <i>Wyodrębnij wg położenia</i>): heksy, które przecinają granicę;</li>
+            <li><b>na heksach</b> w kalkulatorze pól dodaj liczbowe pole <code>hex_id</code> = <code>@row_number</code>;</li>
+            <li><b>dopiero teraz</b> <i>Centroids</i> (PL: <i>Centroidy</i>): centroidy odziedziczą <code>hex_id</code>, więc wszystkie dalsze łączenia zadziałają.</li>
+          </ul>
+        </li>
+        <li data-reveal><b>Szkoły z OSM</b>
+          <ul>
+            <li>przeciągnij <span class="path">&lt;miasto&gt;.osm.pbf</span> do QGIS i zaznacz warstwy <i>points</i> i <i>multipolygons</i>;</li>
+            <li>filtr na <i>points</i>: <code>"other_tags" LIKE '%"amenity"=&gt;"school"%'</code>;</li>
+            <li>filtr na <i>multipolygons</i>: <code>"amenity" = 'school'</code> (tu <code>amenity</code> jest osobną kolumną);</li>
+            <li>z poligonów zrób <i>Centroids</i>, potem scal obie warstwy: <i>Merge vector layers</i> (PL: <i>Połącz warstwy wektorowe</i>);</li>
+            <li>na scalonej warstwie w kalkulatorze pól dodaj liczbowe pole <code>szkoly</code> = <code>1</code>. Bez niego analiza nie ma czego zliczać.</li>
+          </ul>
+          <p>W Łodzi wychodzi ok. 260 szkół. Jeśli masz kilkadziesiąt, poligony nie przeszły przez filtr.</p></li>
         <li data-reveal><b>Ludność z GUS</b>
           <ul>
-            <li>z <span class="path">brec_2021_polska.gpkg</span> (warstwa <i>obwody_spisowe</i>) wytnij swoje miasto: <i>Extract by location</i> z granicą;</li>
-            <li><i>Easy-R5 → Prepare population layer</i>: <span class="path">ludnosc_nsp_2021.xlsx</span>, arkusz = twoje województwo, kolumna <code>10-19</code>, klucz <code>OBWOD</code>;</li>
-            <li><i>Population overlay</i>: ludność z obwodów na heksy.</li>
+            <li>z <span class="path">brec_2021_polska.gpkg</span> (warstwa <i>obwody_spisowe</i>) wytnij swoje miasto: <i>Extract by location</i> z granicą (wczytanie całej Polski chwilę trwa);</li>
+            <li><i>Prepare population layer</i> (PL: <i>Analiza → Przygotuj warstwę ludności</i>): plik <span class="path">ludnosc_nsp_2021.xlsx</span>, arkusz = twoje województwo dokładnie jak w Excelu (np. <code>Łódzkie</code>), kolumna <code>10-19</code>, klucz <code>OBWOD</code>. Pole wynikowe nazwie się <code>pop10_19</code>;</li>
+            <li><i>Population overlay</i> (PL: <i>Analiza → Nałóż ludność na siatkę</i>): siatka = <b>heksy</b> (poligony z <code>hex_id</code>), pole ludności = <code>pop10_19</code>. Wynik jest w polu <code>population</code>. Ostrzeżenia o pustych wartościach to obwody utajnione przez GUS.</li>
           </ul>
         </li>
       </ol>
 
       <div class="phase"><LineBullet label="C" line="blue" size="md" /><h3>Analiza i porównanie · 15 min</h3></div>
       <ol class="steps">
-        <li data-reveal><b>Dwa przebiegi, identyczne parametry</b><p><i>Run accessibility</i>: origins = centroidy heksów (<code>hex_id</code> jako identyfikator), destinations = szkoły, okno 7:00–9:00, percentyl 50, próg 30 min. Raz sieć i data 26.08, raz 16.09.</p></li>
-        <li data-reveal><b>Porównanie</b><p><i>Scenarios → Compare scenarios</i>: A = 26.08, B = 16.09, pole dostępności, „wyżej znaczy lepiej”. Narzędzie odmówi porównania, jeśli metoda się różni. To celowe zabezpieczenie.</p></li>
-        <li data-reveal><b>Mapa</b><p><i>Join attributes by field value</i> z heksami po <code>hex_id</code>, styl według <code>diff</code>.</p></li>
+        <li data-reveal><b>Dwa przebiegi, identyczne parametry</b><p><i>Run accessibility</i> (PL: <i>Analiza → Policz dostępność</i>):</p>
+          <ul>
+            <li>sieć: <span class="path">network.dat</span> z 26.08, data <code>2026-08-26</code>;</li>
+            <li>punkty źródłowe: centroidy heksów, pole identyfikatora <code>hex_id</code>;</li>
+            <li>punkty docelowe: szkoły, pola możliwości: <code>szkoly</code>;</li>
+            <li>czas odjazdu 07:00, okno 120 min (czyli 7:00–9:00), percentyl <code>50</code>;</li>
+            <li>progi czasowe: <code>30</code> (domyślnie jest <code>15,30,45,60</code>).</li>
+          </ul>
+          <p>Potem drugi raz z siecią i datą 16.09. Wynik jest w polu <code>acc_szkoly_p50_c30</code>: liczba szkół w zasięgu 30 min.</p></li>
+        <li data-reveal><b>Porównanie</b><p><i>Scenarios → Compare scenarios</i>: A = wynik 26.08, B = wynik 16.09, pole identyfikatora <code>hex_id</code>, pole <code>acc_szkoly_p50_c30</code>, „wyżej znaczy lepiej” zaznaczone. Narzędzie odmówi porównania, jeśli metoda się różni. To celowe zabezpieczenie.</p></li>
+        <li data-reveal><b>Mapa</b><p><i>Join attributes by field value</i> (PL: <i>Złącz atrybuty wg wartości pola</i>): warstwa wejściowa = heksy, warstwa łączona = wynik porównania, pole <code>hex_id</code> w obu. Styl: stopniowany według <code>diff</code>, rampa RdBu, symetrycznie wokół 0.</p></li>
         <li data-reveal><b>Kontrola ręczna</b><p>Kalkulator pól: <code>"value_b" - "value_a"</code>. Musi wyjść to samo co <code>diff</code>.</p></li>
-        <li data-reveal><b>Wynik w ludziach</b><p><i>Summarize accessibility equity</i> dla obu przebiegów z ludnością 10–19: „X% uczniów ma szkołę w 30 min w wakacje, Y% we wrześniu”.</p></li>
-        <li data-reveal><b>Wariant dodatkowy: P85</b><p>Pobierz 16.09 w wariancie P85, zbuduj trzecią sieć i powtórz <i>Run accessibility</i>. Porównaj z P50 z tego samego dnia: ilu uczniów traci szkołę w zasięgu, kiedy trafią na wolniejszy kurs?</p></li>
+        <li data-reveal><b>Wynik w ludziach</b><p>Najpierw dołącz ludność do wyniku każdego przebiegu: <i>Join attributes by field value</i>, wynik <i>Run accessibility</i> ← heksy z ludnością, po <code>hex_id</code>, pole <code>population</code>. Potem <i>Summarize accessibility equity</i>: pole ludności <code>population</code>, pole dostępności <code>acc_szkoly_p50_c30</code>, próg <code>1</code>, a dla porównania także <code>10</code>. Zdanie do zapisania: „X% uczniów ma szkołę w 30 min w wakacje, Y% we wrześniu”. Przy progu 1 obie daty dają zwykle prawie to samo; różnicę widać przy progu 10.</p></li>
+        <li data-reveal><b>Wariant dodatkowy: P85</b><p>Pobierz 16.09 w wariancie <i>Realized — conservative (P85)</i>, zbuduj trzecią sieć i powtórz <i>Run accessibility</i>. <b>Percentyl zostaw 50</b>: P85 dotyczy danych, nie parametru analizy. Zrób <i>Summarize accessibility equity</i> dla P85 i porównaj odsetek z P50 przy progach 1 i 10: ilu uczniów traci szkoły w zasięgu, kiedy trafią na wolniejszy kurs?</p></li>
       </ol>
       <div class="note" data-reveal>
         <h3>Uwaga: nie każda różnica to efekt wakacji</h3>
@@ -320,7 +368,6 @@ const r5Algs: [string, string][] = [
       </div>
     </div>
   </section>
-
 
   <!-- 08 · SKĄD DANE -->
   <section id="rzeczywistosc" class="sec">

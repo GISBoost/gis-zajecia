@@ -70,24 +70,32 @@ wariant co 15 min przenosimy do zadania domowego. Ćwiczenia 2 nie skracamy — 
 
 **Pytanie:** jak zmienia się zasięg 30 minut z jednego miejsca w ciągu dnia?
 
-1. *easy-OTP → Setup → Download Java 8 JRE and OpenTripPlanner Jar* (już pobrane na starcie).
-   Awaryjnie: skopiuj `silniki/otp/` i wskaż ścieżki w *Advanced*.
-2. *Diagnostics → Test OTP server* — czy Java i jar są widoczne.
-3. Do jednego folderu: `osm/<miasto>.osm.pbf` i `<miasto>_realized_gtfs_2026-09-16_p50.zip` z paczki.
-4. *Analysis → Generate isochrones over time*: punkt (kliknięcie na mapie: dworzec lub uczelnia),
-   TRANSIT, FROM, próg `30`, data 2026-09-16, okno 06:00–22:00, **interwał 60 min** → 17 izochron
-   z polem `time` (QDateTime). Pierwszy przebieg buduje graf (najdłuższy krok).
-5. *Właściwości warstwy → Czasowe*: dynamiczne właściwości czasowe, *Pojedyncze pole z datą/czasem*,
-   pole `time`, czas trwania zdarzenia 60 min.
-6. *Widok → Panele → Temporal Controller*: animacja, zakres z warstw, krok 1 h → odtwórz.
-7. Dla chętnych: interwał 15 min albo progi `15,30`.
+Nazwy w polskim QGIS są przetłumaczone; strona podaje obie wersje. Wyszukiwarka Przybornika
+Processing znajduje algorytm po obu.
+
+1. *easy-OTP → Setup → Download Java 8 JRE and OpenTripPlanner Jar* (PL: *1 · Konfiguracja →
+   Pobierz Java 8 JRE i plik Jar OpenTripPlanner*), już pobrane na starcie. Wtyczka zapamiętuje
+   Javę i jar (wymaga wersji easy-OTP z poprawką domyślnego jara). Awaryjnie: `otp/` z pendrive’a.
+2. *Diagnostics → Test OTP server* (PL: *Test serwera OTP*) → „Wszystkie testy zaliczone”.
+3. `osm/<miasto>.osm.pbf` i `<miasto>_realized_gtfs_2026-09-16_p50.zip` z paczki; plik rozkładu
+   w osobnym folderze bez innych .zip (to *Folder GTFS*).
+4. Podkład: *Przeglądarka → XYZ Tiles → OpenStreetMap*.
+5. *Analysis → Generate isochrones over time* (PL: *Generuj izochrony w czasie*): punkt („…” i klik
+   na mapie), OSM, Folder GTFS, TRANSIT, FROM, próg `30`, okno 06:00–22:00, **interwał 60**
+   (domyślnie 15), data **2026-09-16** (domyślnie dziś), *Katalog roboczy* = nowy pusty folder.
+   → 17 izochron z polem `time`. Pierwszy przebieg buduje graf (Łódź: graf 72 s, całość ok. 1,5 min).
+6. *Właściwości warstwy → Czas*: *Dynamiczna kontrola czasu*, Tryb: *pojedyncze pole z datą/godziną*,
+   pole `time`, czas trwania zdarzenia 60 min (wtyczka tego nie ustawia).
+7. *Widok → Panele → Sterowanie czasem* (Temporal Controller): animacja, *Ustaw na pełny zakres*,
+   krok 1 h → ▶.
+8. Dla chętnych: interwał 15 min albo progi `15,30`, ten sam *Katalog roboczy* (graf już jest).
 
 Obrazek na stronie przy ćwiczeniu (izochrony 15/30/45) pokazuje inny algorytm
 (*Generate isochrones*) — strona to zaznacza.
 
 **Pytanie do dyskusji:** o której zasięg jest największy, a o której najmniejszy? Gdzie rośnie
 skokowo (kolej, tramwaj), a gdzie jest „poszarpany”? Dlaczego wieczorem kurczy się bardziej
-na peryferiach?
+na peryferiach? (Test dla Łodzi Fabrycznej: najmniej 32,0 km² o 14:00, najwięcej 48,3 km² o 20:00.)
 
 ## Ćwiczenie 2 — wakacje a rok szkolny na drogach, R5 na danych RT (35 min)
 
@@ -98,43 +106,58 @@ Liczymy na **rozkładzie zrealizowanym P50** z nagrań GTFS-RT (gtfs-dashboard),
 w wyniku są i zmiany rozkładu, i korki. Wariant **P85** (ostrożny) jako dodatkowy. Oba dni mają
 P50 i P85 dla wszystkich 15 miast (manifest gtfs-dashboard, status `ok`, pokrycie 6:00–22:00).
 
+Realnie ćwiczenie zajmuje 45–55 min (test 25.10.2026): obliczenia trwają ok. 4 min, resztę
+zajmuje ok. 25 operacji w QGIS. Jeśli brakuje czasu, P85 robi prowadzący jako pokaz.
+
 ### A. Dane (10 min)
 
-1. *Easy-R5 → Download transit recordings…*: miasto, dzień **2026-08-26**, wariant **P50**.
-   Potem drugi raz: **2026-09-16**, P50. Każdy dzień ląduje w osobnym folderze — tak ma być.
-2. *Diagnostics → Check transit data* dla obu folderów z ich datą. Zero błędów = można budować.
-   (Pułapka do omówienia: data bez kursów daje po cichu same trasy piesze.)
-3. *Setup → Build R5 network* dwa razy: ten sam `osm/<miasto>.osm.pbf`, raz folder
-   z 26.08, raz z 16.09.
+1. *Easy-R5 → Download transit recordings…*: City (Łódź na końcu listy, nie ŁKA), najpierw
+   Month **2026-08**, potem Day **2026-08-26**, Variant **Realized — median (P50)**, Download into
+   np. `C:5
+agrania`. Potem drugi raz: **2026-09-16**, P50. Każdy dzień ląduje w osobnym
+   folderze (`…\<miasto>\<data>\p50\`) — tak ma być.
+2. *Diagnostics → Check transit data (GTFS)*: plik .zip danego dnia i ta sama data. Zero błędów
+   = można budować (ostrzeżenia OK). **Uwaga:** pliki zrealizowane mają kursy w kalendarzu aż do
+   31.12.2026, więc pomyłki daty nie wykryje ani ten krok, ani R5 — pilnować zgodności daty i folderu.
+3. *Build R5 network* (PL: *Konfiguracja → Zbuduj sieć R5*) dwa razy: ten sam
+   `osm/<miasto>.osm.pbf`, raz folder z 26.08, raz z 16.09 (pole podpowiada ostatnie pobranie).
+   Zapisać ścieżkę `network.dat` z okna wyników — folder ma losową nazwę. Łódź: 25–34 s.
 
 ### B. Siatka, cele, ludność (10 min, równolegle z budową sieci)
 
 4. Wczytaj `granice/<miasto>_granica.gpkg`.
-5. Siatka: *Processing → Create grid* (heksagony, 500 m, EPSG:2180, zasięg = granica) →
-   *Extract by location* (przecina granicę) → *Centroids*. W kalkulatorze pól dodaj `hex_id`
-   (`@row_number`) — to identyfikator do łączenia.
-6. Szkoły: wczytaj `<miasto>.osm.pbf` w QGIS (warstwy *points* i *multipolygons*), filtr
-   `"other_tags" LIKE '%"amenity"=>"school"%'`, z poligonów *Centroids*, scal obie warstwy.
+5. Siatka: *Create grid* (heksagony, 500 m, EPSG:2180, zasięg = granica) → *Extract by location*
+   (przecina granicę) → **na heksach** `hex_id` = `@row_number` → dopiero potem *Centroids*
+   (centroidy dziedziczą `hex_id`). Łódź: 1476 heksów.
+6. Szkoły: `<miasto>.osm.pbf` w QGIS (warstwy *points* i *multipolygons*). Filtr na *points*:
+   `"other_tags" LIKE '%"amenity"=>"school"%'`; na *multipolygons*: `"amenity" = 'school'`
+   (tam `amenity` to osobna kolumna). Z poligonów *Centroids*, scal obie warstwy, dodaj liczbowe
+   pole `szkoly` = `1` (potrzebne jako pole możliwości). Łódź: ok. 260 szkół.
 7. Ludność:
-   - z `gus/brec_2021_polska.gpkg` wybierz obwody swojego miasta
-     (*Extract by location* z granicą miasta albo wyrażenie na polu `GMINA`);
-   - *Easy-R5 → Prepare population layer*: `ludnosc_nsp_2021.xlsx`, arkusz = województwo,
-     kolumna `10-19`, klucz `OBWOD`;
-   - *Population overlay*: ludność na heksy.
+   - z `gus/brec_2021_polska.gpkg` wybierz obwody swojego miasta (*Extract by location* z granicą);
+   - *Prepare population layer* (PL: *Przygotuj warstwę ludności*; wymaga wersji Easy-R5 z poprawką
+     importu): `ludnosc_nsp_2021.xlsx`, arkusz dokładnie jak w Excelu (np. `Łódzkie`), kolumna
+     `10-19`, klucz `OBWOD` → pole `pop10_19`;
+   - *Population overlay* (PL: *Nałóż ludność na siatkę*): siatka = heksy, pole `pop10_19` →
+     wynik w polu `population`. Łódź: 53 095 osób w heksach.
 
 ### C. Analiza i porównanie (15 min)
 
-8. *Run accessibility* dwa razy z **identycznymi** parametrami: origins = centroidy heksów
-   (`ORIGIN_ID_FIELD = hex_id`), destinations = szkoły, okno 7:00–9:00, P50, próg 30 min.
-   Raz sieć i data 26.08, raz 16.09.
-9. *Scenarios → Compare scenarios*: A = 26.08, B = 16.09, pole dostępności, *higher is better*.
-   Narzędzie odmówi porównania, jeśli metoda się różni — to celowe.
-10. Połącz wynik z heksami (*Join attributes by field value*, `hex_id`), styl według `diff`.
+8. *Run accessibility* (PL: *Policz dostępność*) dwa razy z **identycznymi** parametrami: sieć
+   `network.dat` i data danego dnia, origins = centroidy (`hex_id`), destinations = szkoły,
+   pola możliwości = `szkoly`, odjazd 07:00, okno 120, percentyl 50, **progi `30`** (domyślnie
+   15,30,45,60). Wynik w polu `acc_szkoly_p50_c30`. Łódź: ok. 30 s.
+9. *Scenarios → Compare scenarios*: A = 26.08, B = 16.09, Id field `hex_id`, pole
+   `acc_szkoly_p50_c30`, *higher is better*. Narzędzie odmówi porównania, jeśli metoda się różni.
+10. *Join attributes by field value*: heksy ← wynik porównania po `hex_id`, styl według `diff` (RdBu).
 11. Kontrola ręczna: kalkulator pól `"value_b" - "value_a"` musi dać to samo co `diff`.
-12. *Summarize accessibility equity* dla obu przebiegów z ludnością 10–19 → zdanie
-    „X% uczniów ma szkołę w 30 min w wakacje, Y% we wrześniu”.
-13. Wariant dodatkowy: 16.09 w wariancie **P85**, trzecia sieć, *Run accessibility* z tymi samymi
-    parametrami, porównanie z P50 tego samego dnia: ilu uczniów traci szkołę, gdy trafi na wolniejszy kurs.
+12. Dołącz `population` z heksów do wyniku każdego przebiegu (*Join attributes by field value* po
+    `hex_id`), potem *Summarize accessibility equity*: pole ludności `population`, pole
+    `acc_szkoly_p50_c30`, próg 1 i 10 → „X% uczniów ma szkołę w 30 min w wakacje, Y% we wrześniu”.
+    Test dla Łodzi: próg 1 → 95,0% i 95,0%; próg 10 → 77,2% i 76,6%.
+13. Wariant dodatkowy: 16.09 *Realized — conservative (P85)*, trzecia sieć, *Run accessibility* z tymi
+    samymi parametrami (**percentyl nadal 50**), Summarize i porównanie z P50. Test dla Łodzi: próg 10
+    → 73,6% zamiast 76,6%, średnio 23,1 szkoły zamiast 28,1.
 
 **Dyskusja:** różnica to nie tylko „szkoła vs wakacje”. Żeby oddzielić efekt rozkładu od zwykłej
 zmienności dnia, porównuje się też dwa dni z tego samego okresu (para kontrolna) — tak jak
